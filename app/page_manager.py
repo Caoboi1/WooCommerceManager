@@ -215,7 +215,7 @@ class PageManagerTab(QWidget):
         super().__init__()
         self.db = DatabaseManager()
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG)  # Bật debug logging
+        self.logger.setLevel(logging.INFO)  # Giảm debug logging
         self.sync_worker = None
         self.progress_dialog = None
 

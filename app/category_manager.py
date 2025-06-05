@@ -1563,79 +1563,6 @@ class CategoryManagerTab(QWidget):
                                      f"Lỗi xóa category: {str(e)}")
             return False
 
-    def delete_category(self):
-        """Xóa danh mục đã chọn"""
-        selected_rows = self.table.selectionModel().selectedRows()
-        if not selected_rows:
-            QMessageBox.warning(self, "Cảnh báo", "Vui lòng chọn danh mục cần xóa")
-            return
-
-        # Lấy thông tin category được chọn
-        row = selected_rows[0].row()
-        item = self.table.item(row, 0)
-        if not item:
-            return
-
-        category_data = item.data(Qt.ItemDataRole.UserRole)
-        if not category_data:
-            return
-
-        category_id = category_data.get('id')
-        category_name = category_data.get('name', '')
-        wc_category_id = category_data.get('wc_category_id')
-
-        try:
-            # Xác nhận xóa
-            reply = QMessageBox.question(
-                self, "Xác nhận xóa", 
-                f"Bạn có chắc chắn muốn xóa danh mục '{category_name}' không?\n\n"
-                "Hành động này không thể hoàn tác.",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.No
-            )
-
-            if reply == QMessageBox.StandardButton.No:
-                return
-
-            # Kiểm tra xem có WC ID không
-            if wc_category_id:
-                # Hiển thị tùy chọn xóa
-                choice_reply = QMessageBox.question(
-                    self, "Tùy chọn xóa",
-                    f"Danh mục này đã được đồng bộ với WooCommerce (ID: {wc_category_id}).\n\n"
-                    "Bạn muốn xóa từ đâu?\n\n"
-                    "Yes: Xóa cả trên site và database local\n"
-                    "No: Chỉ xóa trong database local",
-                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel,
-                    QMessageBox.StandardButton.Yes
-                )
-
-                if choice_reply == QMessageBox.StandardButton.Cancel:
-                    return
-                elif choice_reply == QMessageBox.StandardButton.Yes:
-                    # Xóa cả trên site và local
-                    success = self.delete_single_category(category_id, wc_category_id, category_name, show_dialogs=True)
-                    if success:
-                        QMessageBox.information(self, "Thành công", 
-                                              f"Đã xóa danh mục '{category_name}' từ cả site và database local!")
-                else:
-                    # Chỉ xóa local
-                    self.db.delete_category(category_id)
-                    QMessageBox.information(self, "Thành công", 
-                                          f"Đã xóa danh mục '{category_name}' khỏi database local!")
-            else:
-                # Chỉ có trong local, xóa trực tiếp
-                self.db.delete_category(category_id)
-                QMessageBox.information(self, "Thành công", 
-                                      f"Đã xóa danh mục '{category_name}'!")
-
-            # Reload categories để cập nhật hiển thị
-            self.load_categories()
-
-        except Exception as e:
-            self.logger.error(f"Lỗi xóa category: {str(e)}")
-            QMessageBox.critical(self, "Lỗi", f"Không thể xóa danh mục:\n{str(e)}")
-
     def handle_delete_failure(self, category_id: int, wc_category_id: int,
                               category_name: str) -> bool:
         """Xử lý khi xóa thất bại"""
@@ -1655,42 +1582,41 @@ class CategoryManagerTab(QWidget):
                 self.db.delete_category(category_id)
                 return True
             except Exception as e:
-                self.logger.error(f"Lỗi xóa category local: {str(e)}")
-                QMessageBox.critical(self, "Lỗi", f"Không thể xóa category khỏi database local: {str(e)}")
+                self.logger.error(f"Lỗi xóa category từ database local: {str(e)}")
                 return False
         
         return False
 
-    def show_deletion_results(self, successful_deletions: List[str], failed_deletions: List[str]):
+    def show_deletion_results(self, successful_deletions: list, failed_deletions: list):
         """Hiển thị kết quả xóa categories"""
         try:
-            message = "📊 **KẾT QUẢ XÓA DANH MỤC**\n\n"
+            message = "📊 **KẾT QUẢ XÓA CATEGORIES**\n\n"
             
             if successful_deletions:
-                message += f"✅ **Đã xóa thành công {len(successful_deletions)} danh mục:**\n"
-                for name in successful_deletions[:10]:  # Hiển thị tối đa 10
-                    message += f"  • {name}\n"
+                message += f"✅ **Đã xóa thành công {len(successful_deletions)} categories:**\n"
+                for cat in successful_deletions[:10]:
+                    message += f"  • {cat}\n"
                 if len(successful_deletions) > 10:
-                    message += f"  ... và {len(successful_deletions) - 10} danh mục khác\n"
+                    message += f"  ... và {len(successful_deletions) - 10} categories khác\n"
                 message += "\n"
             
             if failed_deletions:
-                message += f"❌ **Không thể xóa {len(failed_deletions)} danh mục:**\n"
-                for name in failed_deletions[:10]:  # Hiển thị tối đa 10
-                    message += f"  • {name}\n"
-                if len(failed_deletions) > 10:
-                    message += f"  ... và {len(failed_deletions) - 10} danh mục khác\n"
+                message += f"❌ **Xóa thất bại {len(failed_deletions)} categories:**\n"
+                for cat in failed_deletions[:5]:
+                    message += f"  • {cat}\n"
+                if len(failed_deletions) > 5:
+                    message += f"  ... và {len(failed_deletions) - 5} categories khác\n"
             
-            # Chọn icon phù hợp
+            # Chọn icon và title phù hợp
             if failed_deletions and not successful_deletions:
                 icon = QMessageBox.Icon.Critical
-                title = "Xóa danh mục thất bại"
+                title = "Xóa categories thất bại"
             elif failed_deletions and successful_deletions:
                 icon = QMessageBox.Icon.Warning
-                title = "Xóa danh mục hoàn thành (có lỗi)"
+                title = "Xóa categories hoàn thành (có lỗi)"
             else:
                 icon = QMessageBox.Icon.Information
-                title = "Xóa danh mục thành công"
+                title = "Xóa categories thành công"
             
             msg_box = QMessageBox(self)
             msg_box.setIcon(icon)
@@ -1701,469 +1627,91 @@ class CategoryManagerTab(QWidget):
         except Exception as e:
             self.logger.error(f"Lỗi hiển thị kết quả xóa: {str(e)}")
             QMessageBox.information(
-                self, "Hoàn thành",
-                f"Đã xóa {len(successful_deletions)} danh mục thành công, {len(failed_deletions)} thất bại"
-            )
-
-    def on_item_changed(self, item):
-        """Xử lý khi item trong table được chỉnh sửa trực tiếp"""
-        if self.is_initializing:
-            return
-            
-        try:
-            row = item.row()
-            column = item.column()
-            
-            # Lấy category data từ item đầu tiên của row
-            first_item = self.table.item(row, 0)
-            if not first_item:
-                return
-                
-            category_data = first_item.data(Qt.ItemDataRole.UserRole)
-            if not category_data:
-                return
-                
-            category_id = category_data.get('id')
-            wc_category_id = category_data.get('wc_category_id')
-            
-            if not wc_category_id:
-                QMessageBox.warning(
-                    self, "Cảnh báo", 
-                    "Danh mục này chưa được đồng bộ với WooCommerce.\n"
-                    "Không thể chỉnh sửa trực tiếp."
-                )
-                # Restore original value
-                self.load_categories()
-                return
-            
-            # Lấy giá trị mới
-            new_value = item.text()
-            
-            # Cập nhật dựa trên cột được chỉnh sửa
-            update_data = category_data.copy()
-            
-            if column == 2:  # Tên danh mục
-                # Loại bỏ tree prefix và icon
-                clean_name = new_value
-                for prefix in ["📁 ", "📂 ", "📄 ", "├── ", "└── "]:
-                    clean_name = clean_name.replace(prefix, "")
-                clean_name = clean_name.strip()
-                
-                update_data['name'] = clean_name
-                
-            elif column == 3:  # Slug
-                update_data['slug'] = new_value
-                
-            elif column == 4:  # Description
-                update_data['description'] = new_value
-                
-            else:
-                # Cột không cho phép chỉnh sửa
-                self.load_categories()
-                return
-            
-            # Xác nhận cập nhật
-            reply = QMessageBox.question(
-                self, "Xác nhận cập nhật",
-                f"Bạn có muốn cập nhật danh mục '{category_data.get('name')}' lên site không?\n\n"
-                "Yes: Cập nhật lên WooCommerce và database local\n"
-                "No: Chỉ cập nhật database local\n"
-                "Cancel: Hủy thay đổi",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel,
-                QMessageBox.StandardButton.Yes
-            )
-            
-            if reply == QMessageBox.StandardButton.Cancel:
-                # Restore original value
-                self.load_categories()
-                return
-            elif reply == QMessageBox.StandardButton.Yes:
-                # Cập nhật lên site
-                self.update_category_on_site(category_id, update_data, wc_category_id)
-            else:
-                # Chỉ cập nhật local
-                self.db.update_category(category_id, update_data)
-                QMessageBox.information(self, "Thành công", "Đã cập nhật danh mục trong database local!")
-                self.load_categories()
-                
-        except Exception as e:
-            self.logger.error(f"Lỗi cập nhật item: {str(e)}")
-            QMessageBox.critical(self, "Lỗi", f"Không thể cập nhật: {str(e)}")
-            # Restore original value
-            self.load_categories()
-
-    def debug_category_mapping(self):
-        """Debug mapping giữa local categories và WooCommerce categories"""
-        try:
-            site_id = self.site_combo.currentData()
-            if not site_id:
-                QMessageBox.warning(self, "Cảnh báo", "Vui lòng chọn một site để debug")
-                return
-                
-            site = self.db.get_site_by_id(site_id)
-            if not site:
-                QMessageBox.warning(self, "Cảnh báo", "Không tìm thấy thông tin site")
-                return
-            
-            # Lấy categories từ database local
-            local_categories = self.db.get_categories_by_site(site_id)
-            
-            # Lấy categories từ WooCommerce
-            from .woocommerce_api import WooCommerceAPI
-            api = WooCommerceAPI(site)
-            wc_categories = api.get_categories()
-            
-            # Tạo debug dialog
-            debug_dialog = QDialog(self)
-            debug_dialog.setWindowTitle(f"Debug Category Mapping - {site.name}")
-            debug_dialog.resize(800, 600)
-            
-            layout = QVBoxLayout(debug_dialog)
-            
-            # Tab widget
-            tab_widget = QTabWidget()
-            
-            # Tab 1: Local categories
-            local_tab = QWidget()
-            local_layout = QVBoxLayout(local_tab)
-            local_layout.addWidget(QLabel(f"Local Categories ({len(local_categories)})"))
-            
-            local_table = QTableWidget()
-            local_table.setColumnCount(4)
-            local_table.setHorizontalHeaderLabels(["Local ID", "Name", "WC ID", "Status"])
-            local_table.setRowCount(len(local_categories))
-            
-            for row, cat in enumerate(local_categories):
-                local_table.setItem(row, 0, QTableWidgetItem(str(cat.get('id', ''))))
-                local_table.setItem(row, 1, QTableWidgetItem(str(cat.get('name', ''))))
-                local_table.setItem(row, 2, QTableWidgetItem(str(cat.get('wc_category_id', ''))))
-                status = "Synced" if cat.get('wc_category_id') else "Local only"
-                local_table.setItem(row, 3, QTableWidgetItem(status))
-            
-            local_layout.addWidget(local_table)
-            tab_widget.addTab(local_tab, "Local Categories")
-            
-            # Tab 2: WooCommerce categories
-            wc_tab = QWidget()
-            wc_layout = QVBoxLayout(wc_tab)
-            wc_layout.addWidget(QLabel(f"WooCommerce Categories ({len(wc_categories)})"))
-            
-            wc_table = QTableWidget()
-            wc_table.setColumnCount(4)
-            wc_table.setHorizontalHeaderLabels(["WC ID", "Name", "Slug", "Parent"])
-            wc_table.setRowCount(len(wc_categories))
-            
-            for row, cat in enumerate(wc_categories):
-                wc_table.setItem(row, 0, QTableWidgetItem(str(cat.get('id', ''))))
-                wc_table.setItem(row, 1, QTableWidgetItem(str(cat.get('name', ''))))
-                wc_table.setItem(row, 2, QTableWidgetItem(str(cat.get('slug', ''))))
-                wc_table.setItem(row, 3, QTableWidgetItem(str(cat.get('parent', ''))))
-            
-            wc_layout.addWidget(wc_table)
-            tab_widget.addTab(wc_tab, "WooCommerce Categories")
-            
-            # Tab 3: Mapping analysis
-            analysis_tab = QWidget()
-            analysis_layout = QVBoxLayout(analysis_tab)
-            
-            analysis_text = QTextEdit()
-            analysis_text.setReadOnly(True)
-            
-            # Phân tích mapping
-            analysis = "📊 CATEGORY MAPPING ANALYSIS\n\n"
-            
-            local_wc_ids = set(cat.get('wc_category_id') for cat in local_categories if cat.get('wc_category_id'))
-            wc_ids = set(cat.get('id') for cat in wc_categories)
-            
-            analysis += f"Local categories: {len(local_categories)}\n"
-            analysis += f"WooCommerce categories: {len(wc_categories)}\n"
-            analysis += f"Synced categories: {len(local_wc_ids)}\n\n"
-            
-            # Categories chỉ có local
-            local_only = [cat for cat in local_categories if not cat.get('wc_category_id')]
-            if local_only:
-                analysis += f"🔸 LOCAL ONLY ({len(local_only)}):\n"
-                for cat in local_only[:10]:
-                    analysis += f"  • {cat.get('name', 'N/A')} (ID: {cat.get('id')})\n"
-                if len(local_only) > 10:
-                    analysis += f"  ... và {len(local_only) - 10} categories khác\n"
-                analysis += "\n"
-            
-            # Categories chỉ có trên WooCommerce
-            wc_only_ids = wc_ids - local_wc_ids
-            if wc_only_ids:
-                analysis += f"🔸 WOOCOMMERCE ONLY ({len(wc_only_ids)}):\n"
-                wc_only_cats = [cat for cat in wc_categories if cat.get('id') in wc_only_ids]
-                for cat in wc_only_cats[:10]:
-                    analysis += f"  • {cat.get('name', 'N/A')} (WC ID: {cat.get('id')})\n"
-                if len(wc_only_cats) > 10:
-                    analysis += f"  ... và {len(wc_only_cats) - 10} categories khác\n"
-                analysis += "\n"
-            
-            # Orphaned categories (có parent_id nhưng parent không tồn tại)
-            all_local_ids = set(cat.get('id') for cat in local_categories)
-            orphaned = []
-            for cat in local_categories:
-                parent_id = cat.get('parent_id')
-                if parent_id and parent_id not in all_local_ids:
-                    orphaned.append(cat)
-            
-            if orphaned:
-                analysis += f"🔸 ORPHANED CATEGORIES ({len(orphaned)}):\n"
-                for cat in orphaned[:10]:
-                    analysis += f"  • {cat.get('name', 'N/A')} (Parent ID: {cat.get('parent_id')})\n"
-                if len(orphaned) > 10:
-                    analysis += f"  ... và {len(orphaned) - 10} categories khác\n"
-                analysis += "\n"
-            
-            analysis_text.setPlainText(analysis)
-            analysis_layout.addWidget(analysis_text)
-            tab_widget.addTab(analysis_tab, "Analysis")
-            
-            layout.addWidget(tab_widget)
-            
-            # Buttons
-            button_layout = QHBoxLayout()
-            
-            sync_missing_btn = QPushButton("Sync Missing from WC")
-            sync_missing_btn.clicked.connect(lambda: self.sync_missing_categories(site_id, wc_only_ids, wc_categories))
-            button_layout.addWidget(sync_missing_btn)
-            
-            close_btn = QPushButton("Close")
-            close_btn.clicked.connect(debug_dialog.accept)
-            button_layout.addWidget(close_btn)
-            
-            layout.addLayout(button_layout)
-            
-            debug_dialog.exec()
-            
-        except Exception as e:
-            self.logger.error(f"Lỗi debug category mapping: {str(e)}")
-            QMessageBox.critical(self, "Lỗi", f"Không thể thực hiện debug: {str(e)}")
-
-    def sync_missing_categories(self, site_id: int, missing_wc_ids: set, wc_categories: list):
-        """Sync các categories thiếu từ WooCommerce về local"""
-        try:
-            if not missing_wc_ids:
-                QMessageBox.information(self, "Thông báo", "Không có categories nào cần sync")
-                return
-            
-            reply = QMessageBox.question(
-                self, "Xác nhận sync",
-                f"Bạn có muốn sync {len(missing_wc_ids)} categories từ WooCommerce về database local không?",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.Yes
-            )
-            
-            if reply == QMessageBox.StandardButton.No:
-                return
-            
-            missing_categories = [cat for cat in wc_categories if cat.get('id') in missing_wc_ids]
-            
-            # Progress dialog
-            progress = QProgressDialog("Đang sync categories...", "Hủy", 0, len(missing_categories), self)
-            progress.setWindowModality(Qt.WindowModality.WindowModal)
-            
-            synced_count = 0
-            for i, wc_cat in enumerate(missing_categories):
-                if progress.wasCanceled():
-                    break
-                
-                progress.setValue(i)
-                progress.setLabelText(f"Sync '{wc_cat.get('name', 'N/A')}'...")
-                QApplication.processEvents()
-                
-                try:
-                    # Tạo category data cho local database
-                    category_data = {
-                        'site_id': site_id,
-                        'wc_category_id': wc_cat.get('id'),
-                        'name': wc_cat.get('name', ''),
-                        'slug': wc_cat.get('slug', ''),
-                        'description': wc_cat.get('description', ''),
-                        'parent_id': wc_cat.get('parent', 0) if wc_cat.get('parent', 0) > 0 else None,
-                        'count': wc_cat.get('count', 0),
-                        'image': wc_cat.get('image', {}).get('src', '') if wc_cat.get('image') else ''
-                    }
-                    
-                    self.db.create_category(category_data)
-                    synced_count += 1
-                    
-                except Exception as e:
-                    self.logger.error(f"Lỗi sync category {wc_cat.get('name')}: {str(e)}")
-            
-            progress.setValue(len(missing_categories))
-            progress.close()
-            
-            # Reload categories
-            self.load_categories()
-            
-            QMessageBox.information(
                 self, "Hoàn thành", 
-                f"Đã sync {synced_count}/{len(missing_categories)} categories thành công!"
-            )
-            
-        except Exception as e:
-            self.logger.error(f"Lỗi sync missing categories: {str(e)}")
-            QMessageBox.critical(self, "Lỗi", f"Không thể sync categories: {str(e)}")("Chỉ xóa local", QMessageBox.ButtonRole.AcceptRole)
-        cancel_btn = msg_box.addButton("Hủy", QMessageBox.ButtonRole.RejectRole)
-        
-        msg_box.exec()
-        
-        if msg_box.clickedButton() == only_local_btn:
-            try:
-                self.db.delete_category(category_id)
-                return True
-            except Exception as e:
-                self.logger.error(f"Lỗi xóa category local: {str(e)}")
-                QMessageBox.critical(self, "Lỗi", f"Không thể xóa category từ database: {str(e)}")
-                return False
-        
-        return False
-
-    def show_deletion_results(self, successful_deletions: List[str], failed_deletions: List[str]):
-        """Hiển thị kết quả xóa"""
-        try:
-            message = f"📊 **KẾT QUẢ XÓA DANH MỤC**\n\n"
-            
-            if successful_deletions:
-                message += f"✅ **Đã xóa thành công {len(successful_deletions)} danh mục:**\n"
-                for cat in successful_deletions[:10]:
-                    message += f"  • {cat}\n"
-                if len(successful_deletions) > 10:
-                    message += f"  ... và {len(successful_deletions) - 10} danh mục khác\n"
-                message += "\n"
-            
-            if failed_deletions:
-                message += f"❌ **Không thể xóa {len(failed_deletions)} danh mục:**\n"
-                for cat in failed_deletions[:10]:
-                    message += f"  • {cat}\n"
-                if len(failed_deletions) > 10:
-                    message += f"  ... và {len(failed_deletions) - 10} danh mục khác\n"
-            
-            icon = QMessageBox.Icon.Information if not failed_deletions else QMessageBox.Icon.Warning
-            title = "Xóa danh mục hoàn thành"
-            
-            QMessageBox.information(self, title, message)
-            
-        except Exception as e:
-            self.logger.error(f"Lỗi hiển thị kết quả xóa: {str(e)}")
+                f"Đã xóa {len(successful_deletions)} categories thành công")
 
     def delete_category(self):
-        """Xóa danh mục đã chọn"""
+        """Xóa danh mục đã chọn (có thể xóa nhiều)"""
         selected_rows = self.table.selectionModel().selectedRows()
         if not selected_rows:
+            QMessageBox.warning(self, "Cảnh báo", "Vui lòng chọn ít nhất một danh mục để xóa")
             return
 
-        # Kiểm tra xem có nhiều rows được chọn không
-        if len(selected_rows) > 1:
-            # Xóa nhiều categories
-            categories_to_delete = []
-            
-            for selected_row in selected_rows:
-                row = selected_row.row()
-                item = self.table.item(row, 0)
-                if item:
-                    category_data = item.data(Qt.ItemDataRole.UserRole)
-                    if category_data:
-                        categories_to_delete.append({
-                            'id': category_data.get('id'),
-                            'wc_id': category_data.get('wc_category_id'),
-                            'name': category_data.get('name', 'Không rõ')
-                        })
-            
-            if not categories_to_delete:
-                return
-            
-            # Xác nhận xóa nhiều
-            reply = QMessageBox.question(
-                self, "Xác nhận xóa nhiều danh mục",
-                f"Bạn có chắc muốn xóa {len(categories_to_delete)} danh mục đã chọn?\n\n"
-                "Lưu ý: Thao tác này không thể hoàn tác!",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.No
-            )
-            
-            if reply == QMessageBox.StandardButton.Yes:
-                self.delete_multiple_categories(categories_to_delete)
-            
-            return
+        # Lấy thông tin các categories cần xóa
+        categories_to_delete = []
+        for row in selected_rows:
+            item = self.table.item(row.row(), 0)
+            if item:
+                category_data = item.data(Qt.ItemDataRole.UserRole)
+                if category_data:
+                    categories_to_delete.append({
+                        'id': category_data.get('id'),
+                        'wc_id': category_data.get('wc_category_id'),
+                        'name': category_data.get('name', 'Không rõ')
+                    })
 
-        # Xóa một category
-        row = selected_rows[0].row()
-        item = self.table.item(row, 0)
-        if not item:
+        if not categories_to_delete:
+            QMessageBox.warning(self, "Cảnh báo", "Không tìm thấy dữ liệu category để xóa")
             return
-
-        category_data = item.data(Qt.ItemDataRole.UserRole)
-        if not category_data:
-            return
-
-        category_name = category_data.get('name', 'Không rõ')
-        category_id = category_data.get('id')
-        wc_category_id = category_data.get('wc_category_id')
 
         # Xác nhận xóa
+        category_names = [cat['name'] for cat in categories_to_delete]
+        if len(categories_to_delete) == 1:
+            message = f"Bạn có chắc muốn xóa danh mục '{category_names[0]}'?"
+        else:
+            message = f"Bạn có chắc muốn xóa {len(categories_to_delete)} danh mục đã chọn?\n\n"
+            message += "Danh sách:\n"
+            for name in category_names[:5]:  # Hiển thị tối đa 5 tên
+                message += f"• {name}\n"
+            if len(category_names) > 5:
+                message += f"... và {len(category_names) - 5} danh mục khác"
+
+        message += "\n\n⚠️ Lưu ý: Thao tác này sẽ:\n"
+        message += "1. Xóa danh mục từ site WooCommerce (nếu đã đồng bộ)\n"
+        message += "2. Xóa danh mục khỏi database local\n"
+        message += "3. KHÔNG thể hoàn tác!\n\n"
+        message += "Bạn có muốn tiếp tục?"
+
         reply = QMessageBox.question(
-            self, "Xác nhận xóa",
-            f"Bạn có chắc muốn xóa danh mục '{category_name}'?\n\n"
-            "Lưu ý: Thao tác này không thể hoàn tác!",
+            self, 
+            "Xác nhận xóa danh mục",
+            message,
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No
         )
 
         if reply == QMessageBox.StandardButton.Yes:
-            try:
-                if wc_category_id:
-                    # Category đã đồng bộ, hỏi có muốn xóa từ site không
-                    site_reply = QMessageBox.question(
-                        self, "Xóa từ WooCommerce?",
-                        f"Danh mục '{category_name}' đã được đồng bộ với WooCommerce.\n\n"
-                        "Bạn có muốn xóa từ site không?\n\n"
-                        "Chọn 'Yes' để xóa từ site và database local\n"
-                        "Chọn 'No' để chỉ xóa từ database local",
-                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel,
-                        QMessageBox.StandardButton.Yes
-                    )
-                    
-                    if site_reply == QMessageBox.StandardButton.Cancel:
-                        return
-                    elif site_reply == QMessageBox.StandardButton.Yes:
-                        # Xóa từ site và local
-                        success = self.delete_single_category(category_id, wc_category_id, category_name, show_dialogs=True)
-                        if success:
-                            self.load_categories()
-                            QMessageBox.information(self, "Thành công", f"Đã xóa danh mục '{category_name}' thành công!")
-                    else:
-                        # Chỉ xóa local
-                        self.db.delete_category(category_id)
-                        self.load_categories()
-                        QMessageBox.information(self, "Thành công", f"Đã xóa danh mục '{category_name}' khỏi database local!")
-                else:
-                    # Category chưa đồng bộ, chỉ xóa local
-                    self.db.delete_category(category_id)
+            if len(categories_to_delete) == 1:
+                # Xóa một category
+                cat_info = categories_to_delete[0]
+                success = self.delete_single_category(
+                    cat_info['id'], 
+                    cat_info['wc_id'], 
+                    cat_info['name'],
+                    show_dialogs=True
+                )
+                if success:
                     self.load_categories()
-                    QMessageBox.information(self, "Thành công", f"Đã xóa danh mục '{category_name}' thành công!")
-
-            except Exception as e:
-                self.logger.error(f"Lỗi xóa category: {str(e)}")
-                QMessageBox.critical(self, "Lỗi", f"Không thể xóa danh mục: {str(e)}")
+                    QMessageBox.information(self, "Thành công", f"Đã xóa danh mục '{cat_info['name']}' thành công!")
+            else:
+                # Xóa nhiều categories
+                self.delete_multiple_categories(categories_to_delete)
 
     def on_item_changed(self, item):
-        """Xử lý khi item trong table được thay đổi (inline editing)"""
+        """Xử lý khi user chỉnh sửa trực tiếp trong table"""
         if self.is_initializing:
-            return
-            
+            return  # Không xử lý khi đang khởi tạo
+        
         try:
             row = item.row()
             column = item.column()
             
             # Lấy category data từ row đầu tiên
-            category_item = self.table.item(row, 0)
-            if not category_item:
+            id_item = self.table.item(row, 0)
+            if not id_item:
                 return
                 
-            category_data = category_item.data(Qt.ItemDataRole.UserRole)
+            category_data = id_item.data(Qt.ItemDataRole.UserRole)
             if not category_data:
                 return
             
@@ -2171,160 +1719,172 @@ class CategoryManagerTab(QWidget):
             wc_category_id = category_data.get('wc_category_id')
             
             if not wc_category_id:
-                QMessageBox.warning(self, "Cảnh báo", 
-                                  "Category chưa được đồng bộ với WooCommerce.\n"
-                                  "Không thể chỉnh sửa trực tiếp.")
-                # Khôi phục giá trị cũ
-                self.load_categories()
+                QMessageBox.warning(
+                    self, "Không thể chỉnh sửa",
+                    "Category này chưa được đồng bộ với WooCommerce.\n"
+                    "Vui lòng sử dụng nút 'Sửa' để chỉnh sửa."
+                )
                 return
             
             # Xác định field được chỉnh sửa
+            field_name = None
             new_value = item.text()
-            field_name = ""
             
             if column == 2:  # Tên danh mục
-                field_name = "name"
-                # Loại bỏ tree structure prefix nếu có
-                if "├── " in new_value or "└── " in new_value:
-                    # Extract actual name from tree structure
-                    if "├── " in new_value:
-                        new_value = new_value.split("├── ")[-1]
-                    elif "└── " in new_value:
-                        new_value = new_value.split("└── ")[-1]
-                    # Remove icons
-                    new_value = new_value.replace("📁 ", "").replace("📂 ", "").replace("📄 ", "")
-                    
+                field_name = 'name'
+                # Loại bỏ prefix tree structure và icon
+                clean_name = new_value
+                if new_value.startswith('📁 '):
+                    clean_name = new_value[2:].strip()
+                elif '├── 📂 ' in new_value:
+                    clean_name = new_value.split('├── 📂 ')[-1].strip()
+                elif '└── 📂 ' in new_value:
+                    clean_name = new_value.split('└── 📂 ')[-1].strip()
+                elif '├── 📄 ' in new_value:
+                    clean_name = new_value.split('├── 📄 ')[-1].strip()
+                elif '└── 📄 ' in new_value:
+                    clean_name = new_value.split('└── 📄 ')[-1].strip()
+                elif '├── ' in new_value:
+                    clean_name = new_value.split('├── ')[-1].strip()
+                elif '└── ' in new_value:
+                    clean_name = new_value.split('└── ')[-1].strip()
+                
+                new_value = clean_name
+                
             elif column == 3:  # Slug
-                field_name = "slug"
+                field_name = 'slug'
             elif column == 4:  # Description
-                field_name = "description"
+                field_name = 'description'
             else:
-                return  # Không cho phép chỉnh sửa các cột khác
+                return  # Không hỗ trợ chỉnh sửa cột khác
             
-            # Kiểm tra giá trị mới có khác không
-            old_value = category_data.get(field_name, '')
-            if new_value == old_value:
+            if not field_name or not new_value.strip():
+                QMessageBox.warning(self, "Lỗi", "Giá trị không được để trống")
                 return
             
-            # Hiển thị dialog xác nhận
+            # Cập nhật database local
+            updated_data = category_data.copy()
+            updated_data[field_name] = new_value.strip()
+            
+            # Hiển thị xác nhận
             reply = QMessageBox.question(
                 self, "Xác nhận cập nhật",
-                f"Bạn có muốn cập nhật {field_name} từ:\n"
-                f"'{old_value}'\n"
-                f"thành:\n"
-                f"'{new_value}'\n\n"
-                "Thay đổi sẽ được đồng bộ lên WooCommerce site.",
+                f"Bạn có muốn cập nhật {field_name} của danh mục '{category_data.get('name')}' "
+                f"từ '{category_data.get(field_name, '')}' thành '{new_value.strip()}'?\n\n"
+                "Thay đổi sẽ được đồng bộ lên WooCommerce.",
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.Yes
             )
             
             if reply == QMessageBox.StandardButton.Yes:
-                # Cập nhật dữ liệu
-                updated_data = category_data.copy()
-                updated_data[field_name] = new_value
-                
-                # Gọi hàm cập nhật
+                # Cập nhật lên site và database
                 self.update_category_on_site(category_id, updated_data, wc_category_id)
             else:
-                # Khôi phục giá trị cũ
-                self.load_categories()
-                
+                # Restore giá trị cũ
+                if column == 2:
+                    # Restore với tree structure
+                    original_display = self.table.item(row, column).text()
+                    self.load_categories()  # Reload để restore tree structure
+                else:
+                    item.setText(str(category_data.get(field_name, '')))
+                    
         except Exception as e:
-            self.logger.error(f"Lỗi inline edit: {str(e)}")
+            self.logger.error(f"Lỗi khi chỉnh sửa trực tiếp: {str(e)}")
             QMessageBox.critical(self, "Lỗi", f"Không thể cập nhật: {str(e)}")
-            # Khôi phục dữ liệu
+            # Reload để restore về trạng thái ban đầu
             self.load_categories()
 
     def debug_category_mapping(self):
-        """Debug category mapping và parent-child relationships"""
+        """Debug category parent-child mapping"""
         try:
-            site_id = self.site_combo.currentData()
-            if not site_id:
-                QMessageBox.warning(self, "Cảnh báo", "Vui lòng chọn một site để debug")
-                return
-                
-            categories = self.db.get_categories_by_site(site_id)
+            categories = self.db.get_all_categories()
             
             debug_info = []
-            debug_info.append("=== CATEGORY MAPPING DEBUG ===\n")
-            debug_info.append(f"Site ID: {site_id}")
-            debug_info.append(f"Total categories: {len(categories)}\n")
+            debug_info.append("🔍 DEBUG CATEGORY MAPPING")
+            debug_info.append("=" * 50)
             
-            # Phân tích parent-child relationships
-            parent_children = {}
-            root_categories = []
-            orphaned_categories = []
+            # Group by site
+            sites = {}
+            for cat in categories:
+                site_id = cat.get('site_id', 'unknown')
+                if site_id not in sites:
+                    sites[site_id] = []
+                sites[site_id].append(cat)
             
-            # Build lookup
-            category_lookup = {cat.get('id'): cat for cat in categories}
-            wc_lookup = {cat.get('wc_category_id'): cat for cat in categories if cat.get('wc_category_id')}
-            
-            debug_info.append("=== CATEGORY DETAILS ===")
-            for category in categories:
-                local_id = category.get('id')
-                wc_id = category.get('wc_category_id')
-                parent_id = category.get('parent_id')
-                name = category.get('name', '')
+            for site_id, site_cats in sites.items():
+                site = self.db.get_site_by_id(site_id) if site_id != 'unknown' else None
+                site_name = site.name if site else f"Site ID: {site_id}"
                 
-                debug_info.append(f"ID: {local_id} | WC_ID: {wc_id} | Parent: {parent_id} | Name: {name}")
+                debug_info.append(f"\n📍 SITE: {site_name}")
+                debug_info.append("-" * 30)
                 
-                if not parent_id or parent_id == 0:
-                    root_categories.append(category)
-                else:
-                    # Kiểm tra parent có tồn tại không
-                    if parent_id in category_lookup or parent_id in wc_lookup:
-                        if parent_id not in parent_children:
-                            parent_children[parent_id] = []
-                        parent_children[parent_id].append(category)
-                    else:
-                        orphaned_categories.append(category)
-                        debug_info.append(f"  → ORPHANED: Parent {parent_id} not found!")
-            
-            debug_info.append(f"\n=== SUMMARY ===")
-            debug_info.append(f"Root categories: {len(root_categories)}")
-            debug_info.append(f"Categories with children: {len(parent_children)}")
-            debug_info.append(f"Orphaned categories: {len(orphaned_categories)}")
-            
-            if orphaned_categories:
-                debug_info.append(f"\n=== ORPHANED CATEGORIES ===")
-                for cat in orphaned_categories:
-                    debug_info.append(f"- {cat.get('name')} (ID: {cat.get('id')}, Parent: {cat.get('parent_id')})")
-            
-            debug_info.append(f"\n=== PARENT-CHILD TREE ===")
-            for parent_id, children in parent_children.items():
-                parent_name = "Unknown"
-                if parent_id in category_lookup:
-                    parent_name = category_lookup[parent_id].get('name', 'Unknown')
-                elif parent_id in wc_lookup:
-                    parent_name = wc_lookup[parent_id].get('name', 'Unknown')
-                    
-                debug_info.append(f"Parent {parent_id} ({parent_name}):")
+                # Phân loại parent và children
+                parents = [cat for cat in site_cats if not cat.get('parent_id') or cat.get('parent_id') == 0]
+                children = [cat for cat in site_cats if cat.get('parent_id') and cat.get('parent_id') != 0]
+                
+                debug_info.append(f"👨‍👩‍👧‍👦 Parent categories: {len(parents)}")
+                for parent in parents:
+                    debug_info.append(f"  • {parent.get('name')} (ID: {parent.get('id')}, WC: {parent.get('wc_category_id')})")
+                
+                debug_info.append(f"\n👶 Child categories: {len(children)}")
                 for child in children:
-                    debug_info.append(f"  └── {child.get('name')} (ID: {child.get('id')})")
+                    parent_id = child.get('parent_id')
+                    parent_name = "Unknown"
+                    
+                    # Tìm parent name
+                    for parent in parents:
+                        if parent.get('id') == parent_id or parent.get('wc_category_id') == parent_id:
+                            parent_name = parent.get('name')
+                            break
+                    
+                    debug_info.append(f"  • {child.get('name')} → Parent: {parent_name} (Parent ID: {parent_id})")
+                
+                # Kiểm tra orphans
+                orphans = []
+                for child in children:
+                    parent_id = child.get('parent_id')
+                    found_parent = False
+                    
+                    for parent in site_cats:
+                        if parent.get('id') == parent_id or parent.get('wc_category_id') == parent_id:
+                            found_parent = True
+                            break
+                    
+                    if not found_parent:
+                        orphans.append(child)
+                
+                if orphans:
+                    debug_info.append(f"\n⚠️ Orphaned categories: {len(orphans)}")
+                    for orphan in orphans:
+                        debug_info.append(f"  • {orphan.get('name')} (Parent ID: {orphan.get('parent_id')} not found)")
             
             # Hiển thị debug info
             debug_text = "\n".join(debug_info)
             
+            # Tạo dialog hiển thị debug info
             dialog = QDialog(self)
-            dialog.setWindowTitle("Category Mapping Debug")
-            dialog.resize(800, 600)
+            dialog.setWindowTitle("Debug Category Mapping")
+            dialog.setMinimumSize(800, 600)
             
             layout = QVBoxLayout(dialog)
             
-            text_edit = QTextEdit()
+            text_edit = QPlainTextEdit()
             text_edit.setPlainText(debug_text)
-            text_edit.setFont(QFont("Courier", 9))
+            text_edit.setReadOnly(True)
+            text_edit.setFont(QFont("Courier", 10))
             layout.addWidget(text_edit)
             
-            buttons = QHBoxLayout()
-            close_btn = QPushButton("Đóng")
-            close_btn.clicked.connect(dialog.close)
-            copy_btn = QPushButton("Copy to Clipboard")
-            copy_btn.clicked.connect(lambda: QApplication.clipboard().setText(debug_text))
+            button_layout = QHBoxLayout()
             
-            buttons.addWidget(copy_btn)
-            buttons.addWidget(close_btn)
-            layout.addLayout(buttons)
+            copy_btn = QPushButton("📋 Copy to Clipboard")
+            copy_btn.clicked.connect(lambda: QApplication.clipboard().setText(debug_text))
+            button_layout.addWidget(copy_btn)
+            
+            close_btn = QPushButton("Đóng")
+            close_btn.clicked.connect(dialog.accept)
+            button_layout.addWidget(close_btn)
+            
+            layout.addLayout(button_layout)
             
             dialog.exec()
             

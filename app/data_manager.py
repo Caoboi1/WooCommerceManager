@@ -111,6 +111,11 @@ class DataCleanupWorker(QThread):
 
 class DataManagerTab(QWidget):
     """Tab quản lý data"""
+    
+    # Define signals at class level
+    progress_started = pyqtSignal()
+    progress_finished = pyqtSignal()
+    status_message = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -246,6 +251,12 @@ class DataManagerTab(QWidget):
         refresh_btn.clicked.connect(self.load_detailed_data)
         filter_layout.addWidget(refresh_btn)
 
+        # Debug button (tạm thời để kiểm tra)
+        debug_btn = QPushButton("🐛 Debug")
+        debug_btn.clicked.connect(self.debug_table_data)
+        debug_btn.setStyleSheet("QPushButton { background-color: #FFA500; color: white; }")
+        filter_layout.addWidget(debug_btn)
+
         data_layout.addLayout(filter_layout)
 
         # Data table với cấu trúc cột tối ưu
@@ -292,6 +303,7 @@ class DataManagerTab(QWidget):
 
         self.data_table.setAlternatingRowColors(True)
         self.data_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.data_table.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)  # Cho phép chọn nhiều dòng
         self.data_table.setSortingEnabled(True)
         self.data_table.itemSelectionChanged.connect(self.on_data_selection_changed)
 
@@ -833,8 +845,8 @@ class DataManagerTab(QWidget):
                 except:
                     continue
             
-            self.logger.info(f"🔍 Consistency Check - Folder Scans: {folder_status_count}")
-            self.logger.info(f"🔍 Consistency Check - Saved Scans: {saved_status_count}")
+            self.logger.debug(f"🔍 Consistency Check - Folder Scans: {folder_status_count}")
+            self.logger.debug(f"🔍 Consistency Check - Saved Scans: {saved_status_count}")
             
             # Cảnh báo nếu có sự khác biệt lớn
             folder_uploaded = folder_status_count.get('uploaded', 0)
@@ -1279,7 +1291,19 @@ class DataManagerTab(QWidget):
                     name_text = f"📁 {name_text}"  # Icon cho folder scan
 
                 name_item = QTableWidgetItem(name_text)
-                name_item.setData(Qt.ItemDataRole.UserRole, item)  # Lưu toàn bộ data
+                
+                # Đảm bảo UserRole data được set đúng cách
+                user_role_data = {
+                    'type': item['type'],
+                    'id': item['id'],
+                    'name': item['name'],
+                    'data': item['data']
+                }
+                name_item.setData(Qt.ItemDataRole.UserRole, user_role_data)
+                
+                # Debug log để kiểm tra
+                self.logger.debug(f"Setting UserRole data for row {row}: type={item['type']}, id={item['id']}")
+                
                 self.data_table.setItem(row, 0, name_item)
 
                 # Số ảnh (cột 1)
@@ -1729,10 +1753,54 @@ class DataManagerTab(QWidget):
 
     def on_data_selection_changed(self):
         """Xử lý khi selection data table thay đổi"""
-        has_selection = len(self.data_table.selectedItems()) > 0
+        selected_rows = self.data_table.selectionModel().selectedRows()
+        has_selection = len(selected_rows) > 0
+        
         self.edit_data_btn.setEnabled(has_selection)
         self.delete_data_btn.setEnabled(has_selection)
         self.view_details_btn.setEnabled(has_selection)
+        self.bulk_edit_btn.setEnabled(has_selection)
+        self.export_selected_btn.setEnabled(has_selection)
+        
+        # Debug: Log selection info
+        if has_selection:
+            self.logger.debug(f"Selected {len(selected_rows)} rows")
+            for i, selected_row in enumerate(selected_rows[:3]):  # Log first 3 rows
+                row = selected_row.row()
+                item = self.data_table.item(row, 0)
+                if item:
+                    item_data = item.data(Qt.ItemDataRole.UserRole)
+                    if item_data:
+                        data_type = item_data.get('type', 'unknown')
+                        data_id = item_data.get('data', {}).get('id', 'no_id')
+                        self.logger.debug(f"  Row {row}: type={data_type}, id={data_id}")
+
+    def debug_table_data(self):
+        """Debug method để kiểm tra dữ liệu trong bảng"""
+        try:
+            row_count = self.data_table.rowCount()
+            self.logger.info(f"🔍 Debug table data - Total rows: {row_count}")
+            
+            for row in range(min(row_count, 5)):  # Check first 5 rows
+                item = self.data_table.item(row, 0)
+                if item:
+                    item_data = item.data(Qt.ItemDataRole.UserRole)
+                    name_text = item.text()
+                    
+                    if item_data:
+                        data_type = item_data.get('type', 'unknown')
+                        data = item_data.get('data', {})
+                        data_id = data.get('id', 'no_id')
+                        data_name = data.get('name', 'no_name')
+                        
+                        self.logger.info(f"  Row {row}: '{name_text}' -> type={data_type}, id={data_id}, name={data_name}")
+                    else:
+                        self.logger.warning(f"  Row {row}: '{name_text}' -> NO USER DATA")
+                else:
+                    self.logger.warning(f"  Row {row}: NO ITEM")
+                    
+        except Exception as e:
+            self.logger.error(f"Error in debug_table_data: {str(e)}")
 
     def get_selected_folder_data(self):
         """Lấy data được chọn (có thể là saved scan hoặc folder scan)"""
@@ -1773,83 +1841,240 @@ class DataManagerTab(QWidget):
             QMessageBox.critical(self, "Lỗi", f"Không thể chỉnh sửa data: {str(e)}")
 
     def delete_selected_data_batch(self):
-        """Xóa data được chọn (hỗ trợ batch delete)"""
+        """Xóa data được chọn (hỗ trợ batch delete) - cải thiện để xóa cả saved scans và folder scans"""
         try:
-            # Lấy tất cả rows được chọn
-            selected_rows = set()
-            for item in self.data_table.selectedItems():
-                selected_rows.add(item.row())
-
+            # Lấy tất cả rows được chọn từ selection model
+            selected_rows = self.data_table.selectionModel().selectedRows()
+            
             if not selected_rows:
                 QMessageBox.warning(self, "Cảnh báo", "Vui lòng chọn ít nhất một item để xóa!")
                 return
 
-            # Lấy danh sách folder_data để xóa
-            folders_to_delete = []
-            for row in selected_rows:
+            # Phân loại items để xóa
+            saved_scans_to_delete = []
+            folder_scans_to_delete = []
+            batch_folders_to_delete = []
+            
+            for selected_row in selected_rows:
+                row = selected_row.row()
                 try:
+                    # Lấy item từ cột đầu tiên (chứa data)
                     item = self.data_table.item(row, 0)
                     if item:
                         item_data = item.data(Qt.ItemDataRole.UserRole)
-                        if item_data and item_data.get('type') == 'folder_scan':
-                            folder_data = item_data.get('data', {})
-                            if folder_data.get('id'):
-                                folders_to_delete.append(folder_data)
+                        self.logger.debug(f"Row {row} item_data: {item_data}")
+                        
+                        if item_data:
+                            item_type = item_data.get('type')
+                            data = item_data.get('data', {})
+                            
+                            self.logger.debug(f"Row {row} type: {item_type}, data_id: {data.get('id')}")
+                            
+                            if item_type == 'saved_scan' and data.get('id'):
+                                saved_scans_to_delete.append(data)
+                            elif item_type == 'folder_scan' and data.get('id'):
+                                folder_scans_to_delete.append(data)
+                            elif item_type == 'batch_folder' and data.get('id'):
+                                batch_folders_to_delete.append(data)
+                        else:
+                            self.logger.warning(f"Row {row}: Không có item_data")
+                    else:
+                        self.logger.warning(f"Row {row}: Không có item")
                 except Exception as e:
-                    self.logger.warning(f"Lỗi lấy data row {row}: {str(e)}")
+                    self.logger.error(f"Lỗi lấy data row {row}: {str(e)}")
                     continue
 
-            if not folders_to_delete:
-                QMessageBox.warning(self, "Cảnh báo", "Không tìm thấy dữ liệu hợp lệ để xóa!")
+            total_items = len(saved_scans_to_delete) + len(folder_scans_to_delete) + len(batch_folders_to_delete)
+            
+            self.logger.info(f"Tổng items được chọn để xóa: {total_items}")
+            self.logger.info(f"- Saved scans: {len(saved_scans_to_delete)}")
+            self.logger.info(f"- Folder scans: {len(folder_scans_to_delete)}")
+            self.logger.info(f"- Batch folders: {len(batch_folders_to_delete)}")
+            
+            if total_items == 0:
+                # Thông báo chi tiết hơn
+                selected_count = len(selected_rows)
+                QMessageBox.warning(self, "Cảnh báo", 
+                    f"Đã chọn {selected_count} dòng nhưng không tìm thấy dữ liệu hợp lệ để xóa!\n\n"
+                    "Có thể do:\n"
+                    "• Dữ liệu không có ID hợp lệ\n"
+                    "• Dữ liệu bị lỗi cấu trúc\n"
+                    "• Chưa load đầy đủ dữ liệu\n\n"
+                    "Thử làm mới dữ liệu bằng nút '🔄 Làm mới'")
                 return
 
-            # Xác nhận xóa
-            count = len(folders_to_delete)
-            if count == 1:
-                data_name = folders_to_delete[0].get('data_name') or folders_to_delete[0].get('original_title', 'N/A')
-                message = f"Bạn có chắc chắn muốn xóa data '{data_name}'?"
+            # Tạo thông báo xác nhận chi tiết
+            confirm_details = []
+            if saved_scans_to_delete:
+                confirm_details.append(f"• {len(saved_scans_to_delete)} Saved Scans")
+            if folder_scans_to_delete:
+                confirm_details.append(f"• {len(folder_scans_to_delete)} Folder Scans")
+            if batch_folders_to_delete:
+                confirm_details.append(f"• {len(batch_folders_to_delete)} Batch Folders")
+
+            if total_items == 1:
+                # Lấy tên item đơn lẻ
+                single_item = (saved_scans_to_delete + folder_scans_to_delete + batch_folders_to_delete)[0]
+                item_name = single_item.get('name') or single_item.get('data_name') or single_item.get('original_title', 'N/A')
+                message = f"Bạn có chắc chắn muốn xóa '{item_name}'?"
             else:
-                message = f"Bạn có chắc chắn muốn xóa {count} items được chọn?"
+                message = f"Bạn có chắc chắn muốn xóa {total_items} items được chọn?\n\n" + "\n".join(confirm_details)
 
             reply = QMessageBox.question(
-                self, "Xác nhận xóa", 
-                f"{message}\n\nThao tác này không thể hoàn tác!",
+                self, "Xác nhận xóa batch", 
+                f"{message}\n\n⚠️ Thao tác này không thể hoàn tác!\n\n"
+                f"📝 Lưu ý:\n"
+                f"• Saved Scans sẽ bị xóa hoàn toàn khỏi database\n"
+                f"• Folder Scans sẽ bị xóa khỏi quản lý\n"
+                f"• Batch Folders chỉ xóa khỏi saved scan (không ảnh hưởng folder scans độc lập)",
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No
             )
 
-            if reply == QMessageBox.StandardButton.Yes:
-                # Xóa từng folder
-                deleted_count = 0
-                failed_count = 0
+            if reply != QMessageBox.StandardButton.Yes:
+                return
 
-                for folder_data in folders_to_delete:
-                    try:
-                        if self.db_manager.delete_folder_scan(folder_data['id']):
-                            deleted_count += 1
-                        else:
-                            failed_count += 1
-                    except Exception as e:
-                        self.logger.error(f"Lỗi xóa folder {folder_data.get('id')}: {str(e)}")
-                        failed_count += 1
+            # Hiển thị progress cho quá trình xóa
+            self.show_progress()
+            self.status_message.emit(f"Đang xóa {total_items} items...")
 
-                # Thông báo kết quả
-                if deleted_count > 0:
-                    if failed_count == 0:
-                        QMessageBox.information(self, "Thành công", f"Đã xóa thành công {deleted_count} items!")
+            # Thống kê kết quả
+            deleted_saved_scans = 0
+            deleted_folder_scans = 0
+            deleted_batch_folders = 0
+            failed_count = 0
+
+            # Xóa Saved Scans
+            for saved_scan in saved_scans_to_delete:
+                try:
+                    if self.db_manager.delete_saved_scan(saved_scan['id']):
+                        deleted_saved_scans += 1
+                        self.logger.info(f"Đã xóa saved scan: {saved_scan.get('name', 'N/A')}")
                     else:
-                        QMessageBox.warning(self, "Một phần thành công", 
-                                          f"Đã xóa {deleted_count} items, {failed_count} items thất bại!")
+                        failed_count += 1
+                except Exception as e:
+                    self.logger.error(f"Lỗi xóa saved scan {saved_scan.get('id')}: {str(e)}")
+                    failed_count += 1
 
-                    # Refresh data
-                    self.load_detailed_data()
-                    self.load_summary()
+            # Xóa Folder Scans
+            for folder_scan in folder_scans_to_delete:
+                try:
+                    if self.db_manager.delete_folder_scan(folder_scan['id']):
+                        deleted_folder_scans += 1
+                        self.logger.info(f"Đã xóa folder scan: {folder_scan.get('data_name', 'N/A')}")
+                    else:
+                        failed_count += 1
+                except Exception as e:
+                    self.logger.error(f"Lỗi xóa folder scan {folder_scan.get('id')}: {str(e)}")
+                    failed_count += 1
+
+            # Xóa Batch Folders (từ saved scans)
+            for batch_folder in batch_folders_to_delete:
+                try:
+                    # Tìm saved scan chứa batch folder này và xóa folder đó
+                    if self.remove_folder_from_saved_scan(batch_folder):
+                        deleted_batch_folders += 1
+                        self.logger.info(f"Đã xóa batch folder: {batch_folder.get('data_name', 'N/A')}")
+                    else:
+                        failed_count += 1
+                except Exception as e:
+                    self.logger.error(f"Lỗi xóa batch folder {batch_folder.get('id')}: {str(e)}")
+                    failed_count += 1
+
+            # Ẩn progress
+            self.hide_progress()
+
+            # Tạo thông báo kết quả chi tiết
+            total_deleted = deleted_saved_scans + deleted_folder_scans + deleted_batch_folders
+            
+            if total_deleted > 0:
+                result_message = f"✅ Đã xóa thành công {total_deleted}/{total_items} items!\n\n"
+                
+                if deleted_saved_scans > 0:
+                    result_message += f"📦 Saved Scans: {deleted_saved_scans}\n"
+                if deleted_folder_scans > 0:
+                    result_message += f"📁 Folder Scans: {deleted_folder_scans}\n"
+                if deleted_batch_folders > 0:
+                    result_message += f"📋 Batch Folders: {deleted_batch_folders}\n"
+                
+                if failed_count > 0:
+                    result_message += f"\n⚠️ Thất bại: {failed_count} items"
+                    QMessageBox.warning(self, "Kết quả xóa", result_message)
                 else:
-                    QMessageBox.critical(self, "Lỗi", "Không thể xóa bất kỳ dữ liệu nào!")
+                    QMessageBox.information(self, "Thành công", result_message)
+
+                # Refresh data
+                self.load_detailed_data()
+                self.load_summary()
+                self.load_batch_filter()
+                self.load_upload_batch_selector()
+            else:
+                QMessageBox.critical(self, "Lỗi", f"Không thể xóa bất kỳ item nào!\n{failed_count} items thất bại.")
 
         except Exception as e:
+            self.hide_progress()
             self.logger.error(f"Lỗi khi xóa data batch: {str(e)}")
             QMessageBox.critical(self, "Lỗi", f"Không thể xóa data: {str(e)}")
+
+    def remove_folder_from_saved_scan(self, batch_folder):
+        """Xóa một folder khỏi saved scan"""
+        try:
+            import json
+            
+            # Lấy thông tin batch hiện tại được chọn
+            batch_id = self.filter_batch_combo.currentData()
+            if not batch_id:
+                return False
+            
+            # Lấy saved scan
+            saved_scans = self.db_manager.get_all_saved_scans()
+            target_scan = None
+            for scan in saved_scans:
+                if scan.get('id') == batch_id:
+                    target_scan = scan
+                    break
+            
+            if not target_scan:
+                return False
+            
+            # Parse folders data
+            data_json = target_scan.get('data', '[]')
+            if isinstance(data_json, str):
+                folders_data = json.loads(data_json)
+            else:
+                folders_data = data_json
+            
+            # Tìm và xóa folder
+            original_count = len(folders_data)
+            folder_id = batch_folder.get('id')
+            
+            folders_data = [f for f in folders_data if f.get('id') != folder_id]
+            
+            if len(folders_data) < original_count:
+                # Cập nhật saved scan
+                updated_data = {
+                    'data': json.dumps(folders_data, ensure_ascii=False),
+                    'folder_count': len(folders_data)
+                }
+                
+                if self.db_manager.update_saved_scan(batch_id, updated_data):
+                    return True
+            
+            return False
+            
+        except Exception as e:
+            self.logger.error(f"Lỗi remove folder from saved scan: {str(e)}")
+            return False
+
+    def show_progress(self):
+        """Hiển thị progress indicator"""
+        if hasattr(self, 'progress_started'):
+            self.progress_started.emit()
+
+    def hide_progress(self):
+        """Ẩn progress indicator"""
+        if hasattr(self, 'progress_finished'):
+            self.progress_finished.emit()
 
     def delete_selected_data(self):
         """Xóa data được chọn (legacy function for compatibility)"""

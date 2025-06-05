@@ -78,14 +78,16 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, 1200, 800)
         self.setMinimumSize(1000, 600)
 
-        # Thiết lập icon cho cửa sổ - tạo icon mặc định nếu không có file
+        # Thiết lập icon cho cửa sổ
         try:
             window_icon = self.create_default_icon()
             if window_icon and not window_icon.isNull():
                 self.setWindowIcon(window_icon)
-                self.logger.info("Đã thiết lập icon cho cửa sổ chính")
+                # Thiết lập thuộc tính window để taskbar nhận diện
+                self.setWindowFlags(self.windowFlags() | Qt.WindowType.Window)
+                self.setProperty("WM_CLASS", "WooCommerce Product Manager")
+                self.logger.info("Đã thiết lập icon và thuộc tính cho cửa sổ chính")
             else:
-                # Bỏ qua icon nếu không tạo được
                 self.logger.info("Ứng dụng khởi động thành công")
 
         except Exception as e:
@@ -357,11 +359,11 @@ class MainWindow(QMainWindow):
     def sync_products(self):
         """Đồng bộ sản phẩm từ các site"""
         if self.tab_widget.currentWidget() == self.product_manager_tab:
-            self.product_manager_tab.sync_all_products()
+            self.product_manager_tab.sync_products()
         else:
             # Switch to product tab and sync
             self.tab_widget.setCurrentWidget(self.product_manager_tab)
-            self.product_manager_tab.sync_all_products()
+            self.product_manager_tab.sync_products()
 
     def show_about(self):
         """Hiển thị thông tin về ứng dụng"""
@@ -389,15 +391,33 @@ class MainWindow(QMainWindow):
     def create_default_icon(self):
         """Tạo icon mặc định đơn giản"""
         try:
-            # Thử load từ file trước
-            if os.path.exists("attached_assets/woo-Photoroom.png"):
-                return QIcon("attached_assets/woo-Photoroom.png")
-            elif os.path.exists("icon.png"):
-                return QIcon("icon.png")
+            # Thử load từ file theo thứ tự ưu tiên
+            icon_paths = [
+                "attached_assets/woo-Photoroom.png",
+                "attached_assets/image_1749110052406.png",
+                "icon.png"
+            ]
+            
+            for icon_path in icon_paths:
+                if os.path.exists(icon_path):
+                    icon = QIcon(icon_path)
+                    if not icon.isNull():
+                        return icon
 
-            # Tạo icon đơn giản bằng code
-            pixmap = QPixmap(32, 32)
-            pixmap.fill(Qt.GlobalColor.blue)
+            # Tạo icon đơn giản bằng code với gradient đẹp hơn
+            pixmap = QPixmap(128, 128)
+            pixmap.fill(Qt.GlobalColor.transparent)
+            
+            painter = QPainter(pixmap)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            
+            # Tạo gradient từ xanh dương sang xanh lá
+            gradient = QBrush(Qt.GlobalColor.blue)
+            painter.setBrush(gradient)
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.drawEllipse(8, 8, 112, 112)
+            
+            painter.end()
             return QIcon(pixmap)
 
         except Exception:

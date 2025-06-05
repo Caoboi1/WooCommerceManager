@@ -68,7 +68,7 @@ def setup_logging():
     # Clear any existing handlers to prevent recursion
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    
+
     # Create a simple, safe logging configuration
     logging.basicConfig(
         level=logging.INFO,
@@ -78,7 +78,7 @@ def setup_logging():
         ],
         force=True
     )
-    
+
     # Disable debug logging for Qt to reduce noise
     logging.getLogger('PyQt6').setLevel(logging.WARNING)
     logging.getLogger('qt').setLevel(logging.WARNING)
@@ -87,7 +87,7 @@ def main():
     """Hàm main khởi chạy ứng dụng với xử lý lỗi an toàn"""
     # Thiết lập logging
     setup_logging()
-    
+
     # Thiết lập Qt platform tự động
     if sys.platform.startswith('win'):
         os.environ['QT_QPA_PLATFORM'] = 'windows'
@@ -102,19 +102,19 @@ def main():
         else:
             # Không có display, dùng headless
             os.environ['QT_QPA_PLATFORM'] = 'minimal'
-        
+
     # Tắt debug logging và cải thiện hiệu suất
     os.environ['QT_LOGGING_RULES'] = '*.debug=false;qt.qpa.xcb.warning=false'
     os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '0'
     os.environ['QT_ENABLE_HIGHDPI_SCALING'] = '0'
-    
+
     logger = logging.getLogger(__name__)
     logger.info("Starting WooCommerce Product Manager")
 
     # Khởi tạo QApplication với xử lý lỗi platform
     app = None
     platforms_to_try = []
-    
+
     if sys.platform.startswith('linux'):
         if 'DISPLAY' in os.environ:
             platforms_to_try = ['xcb', 'minimal', 'offscreen']
@@ -126,7 +126,7 @@ def main():
         platforms_to_try = ['cocoa']
     else:
         platforms_to_try = ['minimal', 'offscreen']
-    
+
     # Thử từng platform cho đến khi thành công
     for platform in platforms_to_try:
         try:
@@ -144,41 +144,63 @@ def main():
                     app = None
                 except:
                     pass
-    
+
     if not app:
         logger.error("Failed to initialize QApplication with any platform")
         print("❌ Không thể khởi tạo giao diện đồ họa")
         return 1
-    
+
     app.setApplicationName("WooCommerce Product Manager")
     app.setApplicationVersion("1.0.0")
     app.setOrganizationName("WooCommerce Tools")
-    
+
     # Thiết lập icon cho ứng dụng và taskbar
     app_icon = None
     try:
-        # Thử load logo WooCommerce mới
-        if os.path.exists("attached_assets/woo-Photoroom.png"):
-            app_icon = QIcon("attached_assets/woo-Photoroom.png")
-            logger.info("Đã load icon WooCommerce")
-        elif os.path.exists("icon.png"):
-            app_icon = QIcon("icon.png")
-            logger.info("Đã load icon mặc định")
-        else:
-            logger.warning("Không tìm thấy file icon nào")
-            
+        # Thử load logo theo thứ tự ưu tiên, looking for larger icons first
+        icon_paths = [
+            "attached_assets/woo-Photoroom_128.png", # Added a possible larger icon
+            "attached_assets/image_1749110052406_128.png", # Added a possible larger icon
+            "attached_assets/woo-Photoroom.png",
+            "attached_assets/image_1749110052406.png",
+            "icon_128.png", # Added a possible larger icon
+            "icon.png"
+        ]
+
+        for icon_path in icon_paths:
+            if os.path.exists(icon_path):
+                app_icon = QIcon(icon_path)
+                if not app_icon.isNull():
+                    logger.info(f"Đã load icon từ {icon_path}")
+                    break
+
         # Thiết lập icon cho ứng dụng nếu có
         if app_icon and not app_icon.isNull():
             app.setWindowIcon(app_icon)
-            # Đảm bảo icon hiển thị trên taskbar
-            if hasattr(app, 'setDesktopFileName'):
-                app.setDesktopFileName("WooCommerce Product Manager")
+
+            # Thiết lập cho taskbar/dock trên các OS khác nhau
+            if sys.platform.startswith('linux'):
+                # Linux - thiết lập WM_CLASS để taskbar nhận diện
+                app.setDesktopFileName("woocommerce-product-manager")
+                os.environ['XDG_CURRENT_DESKTOP'] = os.environ.get('XDG_CURRENT_DESKTOP', 'GNOME')
+            elif sys.platform.startswith('win'):
+                # Windows - thiết lập app ID
+                import ctypes
+                myappid = 'woocommerce.productmanager.1.0'
+                try:
+                    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+                except:
+                    pass
+            elif sys.platform.startswith('darwin'):
+                # macOS - thiết lập bundle identifier
+                app.setApplicationName("WooCommerce Product Manager")
+
             logger.info("Đã thiết lập icon cho ứng dụng và taskbar")
         else:
-            logger.warning("Icon không hợp lệ hoặc không load được")
-            
+            logger.warning("Không thể tạo icon hợp lệ từ các file có sẵn")
+
     except Exception as e:
-        logger.warning(f"Không thể load icon: {str(e)}")
+        logger.warning(f"Lỗi khi thiết lập icon: {str(e)}")
 
     # Thiết lập font hỗ trợ tiếng Việt
     app.setFont(QFont("Arial", 10))
@@ -273,14 +295,27 @@ def main():
             app.setFont(QFont("Arial", 10))
         except Exception as e:
             logger.warning(f"Could not set font: {e}")
-        
+
         # Thiết lập icon an toàn
         try:
-            if os.path.exists("attached_assets/woo-Photoroom.png"):
-                app_icon = QIcon("attached_assets/woo-Photoroom.png")
-                if not app_icon.isNull():
-                    app.setWindowIcon(app_icon)
-                    logger.info("Icon loaded successfully")
+            # Looking for larger icons first
+            icon_paths = [
+                "attached_assets/woo-Photoroom_128.png", # Added a possible larger icon
+                "attached_assets/image_1749110052406_128.png", # Added a possible larger icon
+                "attached_assets/woo-Photoroom.png",
+                "attached_assets/image_1749110052406.png",
+                "icon_128.png", # Added a possible larger icon
+                "icon.png"
+            ]
+
+            for icon_path in icon_paths:
+                if os.path.exists(icon_path):
+                    app_icon = QIcon(icon_path)
+                    if not app_icon.isNull():
+                        app.setWindowIcon(app_icon)
+                        logger.info(f"Icon loaded successfully from {icon_path}")
+                        break
+
         except Exception as e:
             logger.warning(f"Could not load icon: {e}")
 
@@ -291,7 +326,7 @@ def main():
             db_manager.init_database()
             print("Database đã sẵn sàng")
             logger.info("Database initialized successfully")
-            
+
         except Exception as e:
             logger.error(f"Database initialization failed: {e}")
             from PyQt6.QtWidgets import QMessageBox
@@ -305,15 +340,15 @@ def main():
             window = MainWindow()
             window.db_manager = db_manager
             window.show()
-            
+
             logger.info("Application started successfully")
-            
+
             # Chạy event loop
             exit_code = app.exec()
             logger.info(f"Application finished with exit code: {exit_code}")
-            
+
             return exit_code
-            
+
         except Exception as e:
             logger.error(f"Failed to create main window: {e}")
             from PyQt6.QtWidgets import QMessageBox
