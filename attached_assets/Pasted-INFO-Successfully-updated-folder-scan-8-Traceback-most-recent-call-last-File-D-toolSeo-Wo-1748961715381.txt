@@ -1,0 +1,15 @@
+INFO - Successfully updated folder_scan 8
+Traceback (most recent call last):
+  File "D:\toolSeo\WooCommerceManager\app\ai_generate_dialog.py", line 728, in rename_images_in_folder
+    os.rename(image_path, new_path)
+FileExistsError: [WinError 183] Cannot create a file when that file already exists: 'D:/Crawl/teealoha_com_1\\NHL-Hawaiian-Shirts\\St-Louis-Blues-Melodic-Rhythm-Hawaiian-Shirt\\St-Louis-Blues-Melodic-Rhythm-Hawaiian-Shirt_02.jpg' -> 'D:/Crawl/teealoha_com_1\\NHL-Hawaiian-Shirts\\St-Louis-Blues-Melodic-Rhythm-Hawaiian-Shirt\\St__Louis_Blues_Hockey_Hawaiian_Shirt.jpg'
+Đã đổi tên: St-Louis-Blues-Melodic-Rhythm-Hawaiian-Shirt_01.jpg -> St__Louis_Blues_Hockey_Hawaiian_Shirt.jpg
+Lỗi đổi tên ảnh: [WinError 183] Cannot create a file when that file already exists: 'D:/Crawl/teealoha_com_1\\NHL-Hawaiian-Shirts\\St-Louis-Blues-Melodic-Rhythm-Hawaiian-Shirt\\St-Louis-Blues-Melodic-Rhythm-Hawaiian-Shirt_02.jpg' -> 'D:/Crawl/teealoha_com_1\\NHL-Hawaiian-Shirts\\St-Louis-Blues-Melodic-Rhythm-Hawaiian-Shirt\\St__Louis_Blues_Hockey_Hawaiian_Shirt.jpg'
+2025-06-03 21:41:33,976 - app.gemini_service - INFO - API call successful with key #1
+INFO - Successfully updated folder_scan 9
+Traceback (most recent call last):
+  File "D:\toolSeo\WooCommerceManager\app\ai_generate_dialog.py", line 728, in rename_images_in_folder
+    os.rename(image_path, new_path)
+FileExistsError: [WinError 183] Cannot create a file when that file already exists: 'D:/Crawl/teealoha_com_1\\Uncategorized\\New-York-Yankees-Summer-Island-Hawaiian-Shirt\\New-York-Yankees-Summer-Island-Hawaiian-Shirt_02.jpg' -> 'D:/Crawl/teealoha_com_1\\Uncategorized\\New-York-Yankees-Summer-Island-Hawaiian-Shirt\\Yankees_Hawaiian_Shirt__Navy_Blue_Island.jpg'
+Đã đổi tên: New-York-Yankees-Summer-Island-Hawaiian-Shirt_01.jpg -> Yankees_Hawaiian_Shirt__Navy_Blue_Island.jpg
+Lỗi đổi tên ảnh: [WinError 183] Cannot create a file when that file already exists: 'D:/Crawl/teealoha_com_1\\Uncategorized\\New-York-Yankees-Summer-Island-Hawaiian-Shirt\\New-York-Yankees-Summer-Island-Hawaiian-Shirt_02.jpg' -> 'D:/Crawl/teealoha_com_1\\Uncategorized\\New-York-Yankees-Summer-Island-Hawaiian-Shirt\\Yankees_Hawaiian_Shirt__Navy_Blue_Island.jpg'

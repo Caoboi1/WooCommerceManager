@@ -1,0 +1,27 @@
+Đã load products thành công
+2025-06-03 21:55:05,857 - app.product_upload_dialog - ERROR - Lỗi load folder scans: 'ProductUploadDialog' object has no attribute 'folder_list'
+2025-06-03 21:56:23,946 - app.woocommerce_api - INFO - Upload ảnh thành công: https://voguepony.com/wp-content/uploads/2025/06/Detroit-Red-Wings-Island-Breeze-Hawaiian-Shirt_02.jpg
+2025-06-03 21:56:28,682 - app.woocommerce_api - INFO - Upload ảnh thành công: https://voguepony.com/wp-content/uploads/2025/06/Detroit-Red-Wings-Island-Breeze-Hawaiian-Shirt_03.jpg
+2025-06-03 21:56:33,541 - app.woocommerce_api - INFO - Upload ảnh thành công: https://voguepony.com/wp-content/uploads/2025/06/Detroit-Red-Wings-Island-Breeze-Hawaiian-Shirt_04.jpg
+2025-06-03 21:56:38,716 - app.woocommerce_api - INFO - Upload ảnh thành công: https://voguepony.com/wp-content/uploads/2025/06/Detroit-Red-Wings-Island-Breeze-Hawaiian-Shirt_05.jpg
+2025-06-03 21:56:45,833 - app.woocommerce_api - INFO - Upload ảnh thành công: https://voguepony.com/wp-content/uploads/2025/06/Detroit_Red_Wings_Hawaiian_Shirt.jpg
+2025-06-03 21:56:54,894 - app.woocommerce_api - INFO - Tạo sản phẩm thành công: ID 1352
+2025-06-03 21:56:56,968 - app.woocommerce_api - INFO - Đã attach media 1347 vào post 1352
+2025-06-03 21:56:58,679 - app.woocommerce_api - INFO - Đã attach media 1348 vào post 1352
+2025-06-03 21:57:00,542 - app.woocommerce_api - INFO - Đã attach media 1349 vào post 1352
+2025-06-03 21:57:05,834 - app.woocommerce_api - INFO - Đã attach media 1350 vào post 1352
+2025-06-03 21:57:08,609 - app.woocommerce_api - INFO - Đã attach media 1351 vào post 1352
+2025-06-03 21:57:11,610 - app.woocommerce_api - INFO - Đã attach media 1347 vào post 1352
+2025-06-03 21:57:11,610 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 1347 to product 1352
+2025-06-03 21:57:16,803 - app.woocommerce_api - INFO - Đã attach media 1348 vào post 1352
+2025-06-03 21:57:16,804 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 1348 to product 1352
+2025-06-03 21:57:25,386 - app.woocommerce_api - INFO - Đã attach media 1349 vào post 1352
+2025-06-03 21:57:25,387 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 1349 to product 1352
+2025-06-03 21:57:29,662 - app.woocommerce_api - INFO - Đã attach media 1350 vào post 1352
+2025-06-03 21:57:29,663 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 1350 to product 1352
+2025-06-03 21:57:34,541 - app.woocommerce_api - INFO - Đã attach media 1351 vào post 1352
+2025-06-03 21:57:34,541 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 1351 to product 1352
+ERROR - Lỗi cập nhật folder scan 2: no such column: uploaded_at
+2025-06-03 21:57:35,543 - app.product_upload_dialog.BulkUploadWorker - ERROR - ❌ Failed to update folder 2 in database
+
+Process finished with exit code -1073740791 (0xC0000409)
