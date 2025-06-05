@@ -5,3 +5,10 @@ pandas>=2.1.4
 
 # Tùy chọn cho xử lý ảnh
 Pillow>=10.0.0
+
+# Các thư viện khác đã được sử dụng
+sqlite3  # Built-in Python
+typing   # Built-in Python 3.5+
+logging  # Built-in Python
+json     # Built-in Python
+datetime # Built-in Python

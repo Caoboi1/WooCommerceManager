@@ -242,6 +242,17 @@ class DatabaseManager:
                 except Exception:
                     pass  # Cột đã tồn tại
 
+                # Ensure category_id column is INTEGER type
+                try:
+                    # Check and fix any string category_id values
+                    conn.execute("""
+                        UPDATE folder_scans 
+                        SET category_id = CAST(category_id AS INTEGER) 
+                        WHERE category_id IS NOT NULL AND category_id != ''
+                    """)
+                except Exception:
+                    pass
+
                 try:
                     conn.execute("ALTER TABLE folder_scans ADD COLUMN site_id INTEGER")
                 except Exception:
@@ -1728,19 +1739,6 @@ class DatabaseManager:
 
                 # Lưu từng page
                 for page in pages:
-                    wp_page_id = page.get('id')
-                    title = page.get('title', {})
-                    if isinstance(title, dict):
-                        title = title.get('rendered', '')
-                    
-                    content = page.get('content', {})
-                    if isinstance(content, dict):
-                        content = content.get('rendered', '')
-                    
-                    excerpt = page.get('excerpt', {})
-                    if isinstance(excerpt, dict):
-                        excerpt = excerpt.get('rendered', '')
-
                     conn.execute("""
                         INSERT INTO pages (
                             site_id, wp_page_id, title, slug, content, excerpt, status,
@@ -1748,12 +1746,12 @@ class DatabaseManager:
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
                         site_id,
-                        wp_page_id,
-                        title,
+                        page.get('id'),
+                        page.get('title', {}).get('rendered', '') if isinstance(page.get('title'), dict) else str(page.get('title', '')),
                         page.get('slug', ''),
-                        content,
-                        excerpt,
-                        page.get('status', 'publish'),
+                        page.get('content', {}).get('rendered', '') if isinstance(page.get('content'), dict) else str(page.get('content', '')),
+                        page.get('excerpt', {}).get('rendered', '') if isinstance(page.get('excerpt'), dict) else str(page.get('excerpt', '')),
+                        page.get('status', 'draft'),
                         page.get('parent', 0),
                         page.get('menu_order', 0),
                         page.get('featured_media', 0),

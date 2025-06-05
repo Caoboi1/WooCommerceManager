@@ -513,7 +513,7 @@ class BulkUploadWorker(QThread):
                     self.log_update.emit(index, "processing", "🔗 Đang attach ảnh và cập nhật metadata...")
                     attached_count = 0
                     metadata_updated_count = 0
-                    
+
                     for img_idx, image in enumerate(uploaded_images):
                         media_id = image.get('id')
                         if media_id and isinstance(product_id, int):
@@ -523,7 +523,7 @@ class BulkUploadWorker(QThread):
                                 if attach_success:
                                     attached_count += 1
                                     self.logger.info(f"Successfully attached media {media_id} to product {product_id}")
-                                
+
                                 # Cập nhật metadata với Caption và Description
                                 metadata_success = api.update_media_metadata(
                                     media_id=media_id,
@@ -534,7 +534,7 @@ class BulkUploadWorker(QThread):
                                 if metadata_success:
                                     metadata_updated_count += 1
                                     self.logger.info(f"Successfully updated metadata for media {media_id}")
-                                
+
                             except Exception as e:
                                 self.logger.warning(f"Could not process image {media_id}: {str(e)}")
 
@@ -549,7 +549,7 @@ class BulkUploadWorker(QThread):
                 if self.db_manager and folder and folder.get('id'):
                     folder_id = folder.get('id')
                     product_id = result.get('id') if result else None
-                    
+
                     try:
                         if result is None:
                             raise Exception("API result is None")
@@ -567,25 +567,25 @@ class BulkUploadWorker(QThread):
                         # Sử dụng method update_folder_scan với retry logic cải tiến
                         max_retries = 3
                         database_updated = False
-                        
+
                         # Force immediate commit trước khi update để tránh transaction conflicts
                         try:
                             import time
                             time.sleep(0.1)  # Small delay to ensure previous operations complete
                         except:
                             pass
-                        
+
                         for attempt in range(max_retries):
                             try:
                                 # Log chi tiết trước khi update
                                 self.logger.info(f"🔄 Attempting database update for folder {folder_id}, attempt {attempt + 1}/{max_retries}")
                                 self.logger.info(f"   Update data: {update_data}")
-                                
+
                                 success = self.db_manager.update_folder_scan(folder_id, update_data)
                                 if success:
                                     self.logger.info(f"✅ DATABASE UPDATE SUCCESS: Folder {folder_id} -> Product ID {product_id} (Attempt {attempt + 1}/{max_retries})")
                                     database_updated = True
-                                    
+
                                     # Immediately verify the update worked
                                     try:
                                         verify_folder = self.db_manager.get_folder_scan_by_id(folder_id)
@@ -598,7 +598,7 @@ class BulkUploadWorker(QThread):
                                                 continue
                                     except Exception as verify_error:
                                         self.logger.error(f"❌ Verification error for folder {folder_id}: {str(verify_error)}")
-                                    
+
                                     break
                                 else:
                                     self.logger.warning(f"⚠️ Database update returned False for folder {folder_id} (Attempt {attempt + 1}/{max_retries})")
@@ -633,7 +633,7 @@ class BulkUploadWorker(QThread):
                                     'upload_success': 1,
                                     'uploaded_at': datetime.now().isoformat()
                                 }
-                                
+
                                 # Try direct SQL update
                                 try:
                                     with self.db_manager.get_connection() as conn:
@@ -643,7 +643,7 @@ class BulkUploadWorker(QThread):
                                             SET status = ?, wc_product_id = ?, upload_success = ?, uploaded_at = ?, updated_at = CURRENT_TIMESTAMP
                                             WHERE id = ?
                                         """, ('uploaded', product_id, 1, datetime.now().isoformat(), folder_id))
-                                        
+
                                         if cursor.rowcount > 0:
                                             conn.commit()
                                             self.logger.info(f"✅ FORCE UPDATE SUCCESS: Folder {folder_id}")
@@ -660,7 +660,7 @@ class BulkUploadWorker(QThread):
                         self.logger.error(f"❌ Critical database error for folder {folder_id}: {str(db_error)}")
                         # Last resort: log the error but don't fail the upload
                         self.logger.error(f"❌ CRITICAL: Product {product_id} uploaded successfully but database update failed for folder {folder_id}")
-                        
+
                         # Try one final basic update
                         try:
                             with self.db_manager.get_connection() as conn:
@@ -763,7 +763,7 @@ class BulkUploadWorker(QThread):
 
             renamed_count = 0
             for index, image in enumerate(images):
-                try:
+                try:```python
                     image_path = os.path.join(folder_path, image)
                     name, ext = os.path.splitext(image)
 
@@ -969,7 +969,7 @@ class BulkUploadWorker(QThread):
                     try:
                         all_saved_scans = self.db_manager.get_all_saved_scans()
                         self.logger.info(f"📋 Found {len(all_saved_scans)} saved scans to check")
-                        
+
                         updated_scans_count = 0
 
                         for saved_scan in all_saved_scans:
@@ -1032,7 +1032,7 @@ class BulkUploadWorker(QThread):
                                             if scan_attempt < 2:
                                                 import time
                                                 time.sleep(0.1 * (scan_attempt + 1))
-                                    
+
                                     if not scan_update_success:
                                         self.logger.error(f"❌ All attempts failed to update saved scan {saved_scan.get('id')}")
 
@@ -1041,7 +1041,7 @@ class BulkUploadWorker(QThread):
                                 continue
 
                         self.logger.info(f"📊 Updated {updated_scans_count} saved scans for folder {folder_id}")
-                        
+
                         # If we updated at least one scan or no scans were found, consider it successful
                         if updated_scans_count > 0 or len(all_saved_scans) == 0:
                             break
@@ -1496,6 +1496,7 @@ class ProductUploadDialog(QDialog):
         # Product info với grid layout 2 cột
         product_group = QGroupBox("📦 Thông tin sản phẩm")
         product_group.setStyleSheet("QGroupBox { font-weight: bold; padding-top: 15px; }")
+        ```python
         product_layout = QGridLayout(product_group)
         product_layout.setVerticalSpacing(10)
         product_layout.setHorizontalSpacing(15)
@@ -2614,3 +2615,51 @@ class ProductUploadDialog(QDialog):
 
         except Exception as e:
             self.logger.error(f"Lỗi click table: {str(e)}")
+
+    def get_product_data(self):
+        """Lấy dữ liệu sản phẩm từ form"""
+        # Get selected category
+        selected_category_id = self.category_combo.currentData()
+        categories = []
+        if selected_category_id:
+            categories = [{'id': selected_category_id}]
+        else:
+            categories = [{'id': 1}]  # Default category if none selected
+        
+        # Ensure category ID is an integer when creating product
+        # Tìm category phù hợp - ensure integer type
+        category_id = folder_data.get('category_id')
+        if not category_id and hasattr(self, 'default_category_id') and self.default_category_id:
+            category_id = self.default_category_id
+
+        if category_id:
+            try:
+                # Convert to integer to ensure proper type for WooCommerce API
+                category_id_int = int(category_id)
+                categories = [category_id_int]
+            except (ValueError, TypeError):
+                self.logger.warning(f"Invalid category ID for folder {folder_name}: {category_id}")
+                categories = []
+
+        # Tắt quản lý kho mặc định
+        manage_stock = False  # Luôn tắt quản lý kho
+        stock_status = 'instock'  # Mặc định luôn có hàng
+
+        product_data = {
+            'name': self.name_edit.text().strip(),
+            'sku': self.sku_edit.text().strip(),
+            'type': 'simple',
+            'status': self.status_combo.currentText(),
+            'description': self.desc_edit.toPlainText(),
+            'regular_price': str(self.regular_price_spin.value()),
+            'sale_price': str(self.sale_price_spin.value()) if self.sale_price_spin.value() > 0 else '',
+            'manage_stock': manage_stock,
+            'stock_status': stock_status,
+            'categories': categories
+        }
+
+        # Only add stock_quantity if managing stock
+        if manage_stock:
+            product_data['stock_quantity'] = self.stock_spin.value()
+
+        return product_data

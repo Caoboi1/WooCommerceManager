@@ -270,7 +270,7 @@ class WooCommerceAPI:
 
                         if update_data:
                             self.logger.info(f"🔧 Updating media metadata for {filename}: Caption='{title}', Alt='{alt_text}', Description='{description[:50]}...'")
-                            
+
                             # Use Basic Auth with WordPress credentials
                             try:
                                 update_response = requests.post(
@@ -325,39 +325,6 @@ class WooCommerceAPI:
     def create_product(self, product_data: Dict) -> Optional[Dict]:
         """Tạo sản phẩm mới với improved error handling"""
         try:
-            # Log request data for debugging
-            self.logger.debug(f"Creating product with data: {product_data}")
-
-            response = self._make_request('POST', 'products', data=product_data)
-
-            if response.status_code == 201:
-                media_data = response.json()
-                self.logger.info(f"Upload ảnh thành công: {media_data.get('source_url')}")
-
-                # Trả về format chuẩn cho WooCommerce images
-                return {
-                    'id': media_data.get('id'),
-                    'src': media_data.get('source_url'),  # WooCommerce sử dụng 'src' thay vì 'url'
-                    'name': filename,
-                    'alt': alt_text or title,
-                    'position': 0  # Thêm position cho WooCommerce
-                }
-            else:
-                error_msg = f"HTTP {response.status_code}"
-                try:
-                    error_data = response.json()
-                    error_msg = error_data.get('message', error_msg)
-                except:
-                    pass
-                raise Exception(f"Upload thất bại: {error_msg}")
-
-        except Exception as e:
-            self.logger.error(f"Lỗi upload media: {str(e)}")
-            raise
-
-    def create_product(self, product_data: Dict) -> Optional[Dict]:
-        """Tạo sản phẩm mới với improved error handling"""
-        try:
             # Validate và clean images data trước khi tạo sản phẩm
             cleaned_product_data = product_data.copy()
             if 'images' in cleaned_product_data:
@@ -384,6 +351,28 @@ class WooCommerceAPI:
                     # Remove images if none are valid
                     cleaned_product_data.pop('images', None)
                     self.logger.warning("No valid images found, creating product without images")
+
+            # Categories - ensure ID is integer
+            categories = cleaned_product_data.get('categories')
+            if categories:
+                if isinstance(categories, (list, tuple)):
+                    cleaned_product_data['categories'] = []
+                    for cat_id in categories:
+                        if cat_id:
+                            try:
+                                # Convert to integer to ensure proper type
+                                cat_id_int = int(cat_id)
+                                cleaned_product_data['categories'].append({'id': cat_id_int})
+                            except (ValueError, TypeError):
+                                self.logger.warning(f"Invalid category ID: {cat_id}")
+                                continue
+                elif isinstance(categories, (int, str)):
+                    try:
+                        cat_id_int = int(categories)
+                        cleaned_product_data['categories'] = [{'id': cat_id_int}]
+                    except (ValueError, TypeError):
+                        self.logger.warning(f"Invalid category ID: {categories}")
+                        cleaned_product_data['categories'] = []
 
             # Log request data for debugging
             self.logger.debug(f"Creating product with cleaned data: {cleaned_product_data}")
@@ -713,14 +702,14 @@ class WooCommerceAPI:
             if response.status_code == 200:
                 updated_media = response.json()
                 self.logger.info(f"✅ Media {media_id} metadata updated successfully")
-                
+
                 # Log kết quả cập nhật
                 caption = updated_media.get('caption', {})
                 if isinstance(caption, dict):
                     caption_text = caption.get('rendered', 'Not set')
                 else:
                     caption_text = str(caption) if caption else 'Not set'
-                
+
                 description_obj = updated_media.get('description', {})
                 if isinstance(description_obj, dict):
                     description_text = description_obj.get('rendered', 'Not set')
@@ -730,7 +719,7 @@ class WooCommerceAPI:
                 self.logger.info(f"   Updated Caption: {caption_text}")
                 self.logger.info(f"   Updated Alt Text: {updated_media.get('alt_text', 'Not set')}")
                 self.logger.info(f"   Updated Description: {description_text[:50]}...")
-                
+
                 return True
             else:
                 self.logger.warning(f"❌ Failed to update media metadata: HTTP {response.status_code}")
@@ -799,8 +788,7 @@ class WooCommerceAPI:
         try:
             url = f"{self.base_url}/wp-json/wp/v2/pages"
 
-            params = {
-                'per_page': per_page,
+            params = {'per_page': per_page,
                 'page': page,
                 **kwargs
             }
