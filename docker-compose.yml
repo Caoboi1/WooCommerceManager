@@ -1,0 +1,41 @@
+# Docker Compose cho WooCommerce Product Manager
+# Chạy ứng dụng desktop với VNC support
+
+version: '3.8'
+
+services:
+  woocommerce-manager:
+    build: .
+    container_name: woocommerce-product-manager
+    ports:
+      - "5901:5901"  # VNC port
+      - "6080:6080"  # noVNC web interface (optional)
+    volumes:
+      - ./data:/home/appuser/app/data  # Persist database và logs
+    environment:
+      - DISPLAY=:99
+      - VNC_PASSWORD=woocommerce123
+      - QT_QPA_PLATFORM=xcb
+    restart: unless-stopped
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "pgrep", "Xvnc"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      
+  # Optional: noVNC web interface
+  novnc:
+    image: theasp/novnc:latest
+    container_name: novnc-web
+    ports:
+      - "6080:8080"
+    environment:
+      - DISPLAY_WIDTH=1024
+      - DISPLAY_HEIGHT=768
+      - RUN_XTERM=no
+    depends_on:
+      - woocommerce-manager
+    profiles:
+      - web

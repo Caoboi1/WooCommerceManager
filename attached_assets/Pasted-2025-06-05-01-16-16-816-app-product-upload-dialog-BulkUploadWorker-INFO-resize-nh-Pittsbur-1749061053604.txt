@@ -1,0 +1,57 @@
+2025-06-05 01:16:16,816 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh Pittsburgh_Penguins_Iconic_Hawaiian_Shirt_04.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:18,698 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Pittsburgh_Penguins_Hockey_Shorts_-_Black_03_resized.jpg
+2025-06-05 01:16:18,699 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: Pittsburgh_Penguins_Hockey_Shorts_-_Black_03_resized.jpg
+2025-06-05 01:16:18,892 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh Pittsburgh_Penguins_Hockey_Shorts_-_Black_04.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:20,171 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/St._Louis_Blues_Hawaiian_Shirt_03_resized.jpg
+2025-06-05 01:16:20,172 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: St._Louis_Blues_Hawaiian_Shirt_03_resized.jpg
+2025-06-05 01:16:20,350 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh St._Louis_Blues_Hawaiian_Shirt_04.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:22,128 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Pittsburgh_Penguins_Iconic_Hawaiian_Shirt_04_resized.jpg
+2025-06-05 01:16:22,129 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: Pittsburgh_Penguins_Iconic_Hawaiian_Shirt_04_resized.jpg
+2025-06-05 01:16:22,321 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh Pittsburgh_Penguins_Iconic_Hawaiian_Shirt_05.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:23,717 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Pittsburgh_Penguins_Hockey_Shorts_-_Black_04_resized.jpg
+2025-06-05 01:16:23,718 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: Pittsburgh_Penguins_Hockey_Shorts_-_Black_04_resized.jpg
+2025-06-05 01:16:23,907 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh Pittsburgh_Penguins_Hockey_Shorts_-_Black_05.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:26,366 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/St._Louis_Blues_Hawaiian_Shirt_04_resized.jpg
+2025-06-05 01:16:26,367 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: St._Louis_Blues_Hawaiian_Shirt_04_resized.jpg
+2025-06-05 01:16:26,581 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh St._Louis_Blues_Hawaiian_Shirt_05.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:27,240 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Pittsburgh_Penguins_Iconic_Hawaiian_Shirt_05_resized.jpg
+2025-06-05 01:16:27,241 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: Pittsburgh_Penguins_Iconic_Hawaiian_Shirt_05_resized.jpg
+2025-06-05 01:16:27,241 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error uploading folder Pittsburgh-Penguins-Iconic-Typography-Hawaiian-Shirt: Upload config is None
+2025-06-05 01:16:27,255 - app.product_upload_dialog.BulkUploadWorker - ERROR - Thread 3 upload error for folder 'Pittsburgh-Penguins-Iconic-Typography-Hawaiian-Shirt': BulkUploadWorker.product_uploaded[int, dict, str].emit(): argument 2 has unexpected type 'NoneType'
+2025-06-05 01:16:27,256 - app.product_upload_dialog.BulkUploadWorker - INFO - Đang đổi tên 5 ảnh trong folder: D:/Crawl/teealoha_com_1\Uncategorized\New-York-Yankees-Summer-Island-Hawaiian-Shirt
+2025-06-05 01:16:27,256 - app.product_upload_dialog.BulkUploadWorker - INFO - Tiêu đề mới: Yankees_Hawaiian_Shirt_Navy_Island_Print
+2025-06-05 01:16:27,256 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: Yankees_Hawaiian_Shirt_Navy_Island_Print.jpg
+2025-06-05 01:16:27,256 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: Yankees_Hawaiian_Shirt_Navy_Island_Print_02.jpg
+2025-06-05 01:16:27,257 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: Yankees_Hawaiian_Shirt_Navy_Island_Print_03.jpg
+2025-06-05 01:16:27,257 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: Yankees_Hawaiian_Shirt_Navy_Island_Print_04.jpg
+2025-06-05 01:16:27,257 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: Yankees_Hawaiian_Shirt_Navy_Island_Print_05.jpg
+2025-06-05 01:16:27,257 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã đổi tên thành công 0/5 ảnh
+2025-06-05 01:16:27,409 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh Yankees_Hawaiian_Shirt_Navy_Island_Print.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:29,472 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Pittsburgh_Penguins_Hockey_Shorts_-_Black_05_resized.jpg
+2025-06-05 01:16:29,473 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: Pittsburgh_Penguins_Hockey_Shorts_-_Black_05_resized.jpg
+2025-06-05 01:16:29,474 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error uploading folder Pittsburgh-Penguins-Icebound-Elegance-Hawaiian-Shirt: Upload config is None
+2025-06-05 01:16:29,492 - app.product_upload_dialog.BulkUploadWorker - ERROR - Thread 1 upload error for folder 'Pittsburgh-Penguins-Icebound-Elegance-Hawaiian-Shirt': BulkUploadWorker.product_uploaded[int, dict, str].emit(): argument 2 has unexpected type 'NoneType'
+2025-06-05 01:16:30,507 - app.product_upload_dialog.BulkUploadWorker - INFO - Thread 1 completed: 1 successful uploads
+2025-06-05 01:16:31,753 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/St._Louis_Blues_Hawaiian_Shirt_05_resized.jpg
+2025-06-05 01:16:31,756 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: St._Louis_Blues_Hawaiian_Shirt_05_resized.jpg
+2025-06-05 01:16:31,757 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error uploading folder St-Louis-Blues-Melodic-Rhythm-Hawaiian-Shirt: Upload config is None
+2025-06-05 01:16:31,774 - app.product_upload_dialog.BulkUploadWorker - ERROR - Thread 2 upload error for folder 'St-Louis-Blues-Melodic-Rhythm-Hawaiian-Shirt': BulkUploadWorker.product_uploaded[int, dict, str].emit(): argument 2 has unexpected type 'NoneType'
+2025-06-05 01:16:32,023 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Yankees_Hawaiian_Shirt_Navy_Island_Print_resized.jpg
+2025-06-05 01:16:32,024 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: Yankees_Hawaiian_Shirt_Navy_Island_Print_resized.jpg
+2025-06-05 01:16:32,244 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh Yankees_Hawaiian_Shirt_Navy_Island_Print_02.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:32,777 - app.product_upload_dialog.BulkUploadWorker - INFO - Thread 2 completed: 1 successful uploads
+2025-06-05 01:16:35,673 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Yankees_Hawaiian_Shirt_Navy_Island_Print_02_resized.jpg
+2025-06-05 01:16:35,674 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: Yankees_Hawaiian_Shirt_Navy_Island_Print_02_resized.jpg
+2025-06-05 01:16:35,823 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh Yankees_Hawaiian_Shirt_Navy_Island_Print_03.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:39,072 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Yankees_Hawaiian_Shirt_Navy_Island_Print_03_resized.jpg
+2025-06-05 01:16:39,073 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: Yankees_Hawaiian_Shirt_Navy_Island_Print_03_resized.jpg
+2025-06-05 01:16:39,256 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh Yankees_Hawaiian_Shirt_Navy_Island_Print_04.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:42,465 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Yankees_Hawaiian_Shirt_Navy_Island_Print_04_resized.jpg
+2025-06-05 01:16:42,467 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: Yankees_Hawaiian_Shirt_Navy_Island_Print_04_resized.jpg
+2025-06-05 01:16:42,652 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã resize ảnh Yankees_Hawaiian_Shirt_Navy_Island_Print_05.jpg: (2000, 2000) → (1200, 1200)
+2025-06-05 01:16:44,944 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Yankees_Hawaiian_Shirt_Navy_Island_Print_05_resized.jpg
+2025-06-05 01:16:44,945 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã xóa file resize: Yankees_Hawaiian_Shirt_Navy_Island_Print_05_resized.jpg
+2025-06-05 01:16:44,945 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error uploading folder New-York-Yankees-Summer-Island-Hawaiian-Shirt: Upload config is None
+2025-06-05 01:16:44,964 - app.product_upload_dialog.BulkUploadWorker - ERROR - Thread 3 upload error for folder 'New-York-Yankees-Summer-Island-Hawaiian-Shirt': BulkUploadWorker.product_uploaded[int, dict, str].emit(): argument 2 has unexpected type 'NoneType'
+2025-06-05 01:16:45,968 - app.product_upload_dialog.BulkUploadWorker - INFO - Thread 3 completed: 1 successful uploads
+2025-06-05 01:16:45,969 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Threading upload completed: 3/7 successful

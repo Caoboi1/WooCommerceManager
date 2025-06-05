@@ -1,0 +1,163 @@
+D:\toolSeo\.venv\Scripts\python.exe D:\toolSeo\WooCommerceManager\main.py 
+2025-06-05 00:37:26,720 - __main__ - INFO - Starting WooCommerce Product Manager
+2025-06-05 00:37:26,720 - __main__ - INFO - Trying Qt platform: windows
+2025-06-05 00:37:26,752 - __main__ - INFO - Successfully initialized QApplication with platform: windows
+2025-06-05 00:37:26,762 - __main__ - INFO - Đã load icon mặc định
+2025-06-05 00:37:26,762 - __main__ - WARNING - Icon không hợp lệ hoặc không load được
+Đang khởi tạo database...
+Database đã sẵn sàng
+2025-06-05 00:37:26,766 - __main__ - INFO - Database initialized successfully
+2025-06-05 00:37:26,768 - app.main_window - INFO - Ứng dụng khởi động thành công
+INFO - Database initialized successfully
+2025-06-05 00:37:27,164 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:37:27,333 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:37:27,501 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:37:27,642 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:37:28,044 - __main__ - INFO - Application started successfully
+Đã load sites thành công
+Đã load categories sites thành công
+Đã load products thành công
+2025-06-05 00:37:42,132 - app.product_upload_dialog - INFO - Đã load cấu hình từ folder data
+2025-06-05 00:38:01,093 - app.product_upload_dialog - INFO - Threading mode enabled
+2025-06-05 00:38:30,649 - app.product_upload_dialog.BulkUploadWorker - INFO - 🔧 Threading enabled: 3 threads, batch size: 5
+2025-06-05 00:38:30,650 - app.product_upload_dialog.BulkUploadWorker - INFO - 📦 Created 10 batches from 50 folders
+2025-06-05 00:38:30,652 - app.product_upload_dialog.BulkUploadWorker - INFO - Đang đổi tên 5 ảnh trong folder: D:/Crawl/teealoha_com_1/NHL-Hawaiian-Shirts\New-York-Rangers-Frozen-Rivals-Hawaiian-Shirt
+2025-06-05 00:38:30,652 - app.product_upload_dialog.BulkUploadWorker - INFO - Tiêu đề mới: NY_Rangers_Frozen_Rivals_Hawaiian_Shirt
+2025-06-05 00:38:30,652 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: NY_Rangers_Frozen_Rivals_Hawaiian_Shirt.jpg
+2025-06-05 00:38:30,652 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: NY_Rangers_Frozen_Rivals_Hawaiian_Shirt_02.jpg
+2025-06-05 00:38:30,653 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: NY_Rangers_Frozen_Rivals_Hawaiian_Shirt_03.jpg
+2025-06-05 00:38:30,653 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: NY_Rangers_Frozen_Rivals_Hawaiian_Shirt_04.jpg
+2025-06-05 00:38:30,653 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: NY_Rangers_Frozen_Rivals_Hawaiian_Shirt_05.jpg
+2025-06-05 00:38:30,653 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã đổi tên thành công 0/5 ảnh
+2025-06-05 00:38:31,655 - app.product_upload_dialog.BulkUploadWorker - INFO - Đang đổi tên 3 ảnh trong folder: D:/Crawl/teealoha_com_1/NHL-Hawaiian-Shirts\Ottawa-Senators-Floral-Power-Hawaiian-Shirt
+2025-06-05 00:38:31,655 - app.product_upload_dialog.BulkUploadWorker - INFO - Tiêu đề mới: Ottawa-Senators-Floral-Power-Hawaiian-Shirt
+2025-06-05 00:38:31,656 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã đổi tên: Ottawa-Senators-Floral-Power-Hawaiian-Shirt_01.jpg -> Ottawa-Senators-Floral-Power-Hawaiian-Shirt.jpg
+2025-06-05 00:38:31,656 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: Ottawa-Senators-Floral-Power-Hawaiian-Shirt_02.jpg
+2025-06-05 00:38:31,656 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: Ottawa-Senators-Floral-Power-Hawaiian-Shirt_03.jpg
+2025-06-05 00:38:31,657 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã đổi tên thành công 1/3 ảnh
+2025-06-05 00:38:32,656 - app.product_upload_dialog.BulkUploadWorker - INFO - Đang đổi tên 3 ảnh trong folder: D:/Crawl/teealoha_com_1/NHL-Hawaiian-Shirts\Philadelphia-Flyers-Sunset-Bloom-Hawaiian-Shirt
+2025-06-05 00:38:32,656 - app.product_upload_dialog.BulkUploadWorker - INFO - Tiêu đề mới: Philadelphia-Flyers-Sunset-Bloom-Hawaiian-Shirt
+2025-06-05 00:38:32,657 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã đổi tên: Philadelphia-Flyers-Sunset-Bloom-Hawaiian-Shirt_01.jpg -> Philadelphia-Flyers-Sunset-Bloom-Hawaiian-Shirt.jpg
+2025-06-05 00:38:32,657 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: Philadelphia-Flyers-Sunset-Bloom-Hawaiian-Shirt_02.jpg
+2025-06-05 00:38:32,658 - app.product_upload_dialog.BulkUploadWorker - INFO - Bỏ qua file: Philadelphia-Flyers-Sunset-Bloom-Hawaiian-Shirt_03.jpg
+2025-06-05 00:38:32,658 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã đổi tên thành công 1/3 ảnh
+2025-06-05 00:38:38,682 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/NY_Rangers_Frozen_Rivals_Hawaiian_Shirt.jpg
+2025-06-05 00:38:38,957 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Ottawa-Senators-Floral-Power-Hawaiian-Shirt.jpg
+2025-06-05 00:38:42,650 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Philadelphia-Flyers-Sunset-Bloom-Hawaiian-Shirt.jpg
+2025-06-05 00:38:45,733 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/NY_Rangers_Frozen_Rivals_Hawaiian_Shirt_02.jpg
+2025-06-05 00:38:47,207 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Ottawa-Senators-Floral-Power-Hawaiian-Shirt_02.jpg
+2025-06-05 00:38:51,152 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Philadelphia-Flyers-Sunset-Bloom-Hawaiian-Shirt_02.jpg
+2025-06-05 00:38:52,664 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/NY_Rangers_Frozen_Rivals_Hawaiian_Shirt_03.jpg
+2025-06-05 00:38:55,763 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Ottawa-Senators-Floral-Power-Hawaiian-Shirt_03.jpg
+2025-06-05 00:38:55,765 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã tìm thấy WC category ID 20 cho folder Ottawa-Senators-Floral-Power-Hawaiian-Shirt
+2025-06-05 00:38:57,538 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/Philadelphia-Flyers-Sunset-Bloom-Hawaiian-Shirt_03.jpg
+2025-06-05 00:38:57,540 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã tìm thấy WC category ID 20 cho folder Philadelphia-Flyers-Sunset-Bloom-Hawaiian-Shirt
+2025-06-05 00:38:57,979 - app.woocommerce_api - INFO - Tạo sản phẩm thành công: ID 268
+2025-06-05 00:38:58,849 - app.woocommerce_api - INFO - Tạo sản phẩm thành công: ID 269
+2025-06-05 00:38:59,222 - app.woocommerce_api - INFO - Đã attach media 259 vào post 268
+2025-06-05 00:39:00,747 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/NY_Rangers_Frozen_Rivals_Hawaiian_Shirt_04.jpg
+2025-06-05 00:39:01,078 - app.woocommerce_api - INFO - Đã attach media 260 vào post 269
+2025-06-05 00:39:01,672 - app.woocommerce_api - INFO - Đã attach media 263 vào post 269
+2025-06-05 00:39:06,064 - app.woocommerce_api - INFO - Đã attach media 262 vào post 268
+2025-06-05 00:39:06,237 - app.woocommerce_api - INFO - Đã attach media 266 vào post 269
+2025-06-05 00:39:06,910 - app.woocommerce_api - INFO - Upload ảnh thành công: https://threadroar.com/wp-content/uploads/2025/06/NY_Rangers_Frozen_Rivals_Hawaiian_Shirt_05.jpg
+2025-06-05 00:39:06,913 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã tìm thấy WC category ID 20 cho folder New-York-Rangers-Frozen-Rivals-Hawaiian-Shirt
+2025-06-05 00:39:07,115 - app.woocommerce_api - INFO - Đã attach media 265 vào post 268
+2025-06-05 00:39:07,311 - app.woocommerce_api - INFO - Đã attach media 260 vào post 269
+2025-06-05 00:39:07,312 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 260 to product 269
+2025-06-05 00:39:08,177 - app.woocommerce_api - INFO - Tạo sản phẩm thành công: ID 271
+2025-06-05 00:39:08,290 - app.woocommerce_api - INFO - Đã attach media 259 vào post 268
+2025-06-05 00:39:08,290 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 259 to product 268
+2025-06-05 00:39:08,420 - app.woocommerce_api - INFO - Đã attach media 263 vào post 269
+2025-06-05 00:39:08,420 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 263 to product 269
+2025-06-05 00:39:09,258 - app.woocommerce_api - INFO - Đã attach media 258 vào post 271
+2025-06-05 00:39:09,506 - app.woocommerce_api - INFO - Đã attach media 262 vào post 268
+2025-06-05 00:39:09,507 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 262 to product 268
+2025-06-05 00:39:09,554 - app.woocommerce_api - INFO - Đã attach media 266 vào post 269
+2025-06-05 00:39:09,554 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 266 to product 269
+2025-06-05 00:39:10,313 - app.woocommerce_api - INFO - Đã attach media 261 vào post 271
+2025-06-05 00:39:10,527 - app.woocommerce_api - INFO - Đã attach media 265 vào post 268
+2025-06-05 00:39:10,528 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 265 to product 268
+2025-06-05 00:39:10,578 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Updated folder 172 status to completed with product ID 269
+2025-06-05 00:39:10,579 - app.product_upload_dialog.BulkUploadWorker - INFO - Đã cập nhật folder 172 trong self.folders
+2025-06-05 00:39:10,720 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 2 folder 1: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,720 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 2 folder 2: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,720 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 2 folder 3: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,720 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 2 folder 4: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,720 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 3 folder 0: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,720 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 3 folder 1: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,720 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 3 folder 2: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,720 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 3 folder 3: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,720 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 3 folder 4: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,722 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 4 folder 0: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,722 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 4 folder 1: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,722 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 4 folder 2: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,722 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 4 folder 3: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,722 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 4 folder 4: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,722 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 5 folder 0: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,722 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 5 folder 1: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,722 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 5 folder 2: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,722 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 5 folder 3: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,722 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 5 folder 4: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,723 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 6 folder 0: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,723 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 6 folder 1: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,723 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 6 folder 2: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,723 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 6 folder 3: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,723 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 6 folder 4: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,723 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 7 folder 0: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,723 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 7 folder 1: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,723 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 7 folder 2: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,723 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 7 folder 3: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,723 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 7 folder 4: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,724 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Batch 3 completed: 1/5 successful
+2025-06-05 00:39:10,725 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 8 folder 0: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,725 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 8 folder 1: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,725 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 8 folder 2: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,725 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 8 folder 3: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,726 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 8 folder 4: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,726 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 9 folder 0: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,726 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 9 folder 1: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,726 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 9 folder 2: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,726 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 9 folder 3: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,726 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 9 folder 4: object of type 'NoneType' has no len()
+2025-06-05 00:39:10,727 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Batch 4 completed: 0/5 successful
+2025-06-05 00:39:10,727 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Batch 5 completed: 0/5 successful
+2025-06-05 00:39:10,727 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Batch 6 completed: 0/5 successful
+2025-06-05 00:39:10,729 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Batch 7 completed: 0/5 successful
+2025-06-05 00:39:10,729 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Batch 8 completed: 0/5 successful
+2025-06-05 00:39:10,729 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Batch 9 completed: 0/5 successful
+2025-06-05 00:39:10,730 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Batch 10 completed: 0/5 successful
+2025-06-05 00:39:11,360 - app.woocommerce_api - INFO - Đã attach media 264 vào post 271
+2025-06-05 00:39:11,562 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 1 folder 1: object of type 'NoneType' has no len()
+2025-06-05 00:39:11,563 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 1 folder 2: object of type 'NoneType' has no len()
+2025-06-05 00:39:11,563 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 1 folder 3: object of type 'NoneType' has no len()
+2025-06-05 00:39:11,563 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 1 folder 4: object of type 'NoneType' has no len()
+2025-06-05 00:39:11,563 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Batch 2 completed: 1/5 successful
+2025-06-05 00:39:11,942 - app.woocommerce_api - INFO - Đã attach media 267 vào post 271
+2025-06-05 00:39:13,048 - app.woocommerce_api - INFO - Đã attach media 270 vào post 271
+2025-06-05 00:39:14,106 - app.woocommerce_api - INFO - Đã attach media 258 vào post 271
+2025-06-05 00:39:14,107 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 258 to product 271
+2025-06-05 00:39:15,157 - app.woocommerce_api - INFO - Đã attach media 261 vào post 271
+2025-06-05 00:39:15,158 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 261 to product 271
+2025-06-05 00:39:16,222 - app.woocommerce_api - INFO - Đã attach media 264 vào post 271
+2025-06-05 00:39:16,223 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 264 to product 271
+2025-06-05 00:39:17,270 - app.woocommerce_api - INFO - Đã attach media 267 vào post 271
+2025-06-05 00:39:17,271 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 267 to product 271
+2025-06-05 00:39:18,343 - app.woocommerce_api - INFO - Đã attach media 270 vào post 271
+2025-06-05 00:39:18,344 - app.product_upload_dialog.BulkUploadWorker - INFO - Successfully attached media 270 to product 271
+2025-06-05 00:39:19,374 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 0 folder 1: object of type 'NoneType' has no len()
+2025-06-05 00:39:19,375 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 0 folder 2: object of type 'NoneType' has no len()
+2025-06-05 00:39:19,375 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 0 folder 3: object of type 'NoneType' has no len()
+2025-06-05 00:39:19,375 - app.product_upload_dialog.BulkUploadWorker - ERROR - Error in batch 0 folder 4: object of type 'NoneType' has no len()
+2025-06-05 00:39:19,375 - app.product_upload_dialog.BulkUploadWorker - INFO - ✅ Batch 1 completed: 1/5 successful
+2025-06-05 00:39:49,928 - app.data_manager - INFO - Sản phẩm được upload: Unknown (ID: None)
+2025-06-05 00:39:49,978 - app.data_manager - INFO - Đã lưu cấu hình upload thành công với thông tin mở rộng
+2025-06-05 00:39:49,984 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:39:50,161 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:39:50,312 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:39:50,452 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:39:50,592 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:39:50,737 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:39:58,868 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:39:59,934 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans
+2025-06-05 00:40:00,640 - app.data_manager - INFO - Found 1 saved scans and 91 folder scans

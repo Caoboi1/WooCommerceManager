@@ -1,0 +1,97 @@
+node_modules
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# Media
+uploads/
+media/
+
+# Environment variables
+.env
+
+# PyQt
+*.ui.autosave
+
+# PyInstaller builds
+dist/
+build/
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+coverage.xml
+*.cover
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Visual Studio Code
+.history
+*.code-workspace
+
+# Backup files
+*.bak
+*~
+*.swp
+*.swo
+
+# Local configuration
+config.local.ini
+settings.local.json
+
+# Cached images
+thumbnails/
+image_cache/
+
+# Temporary files
+temp/
+tmp/
