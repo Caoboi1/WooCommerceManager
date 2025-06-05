@@ -39,8 +39,4 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "chmod +x run_app.sh"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "./run_app.sh"
+args = "python3 main.py"

@@ -1,4 +1,4 @@
-# Corrected the duplicate update_category method and removed the potentially problematic site_name column reference.
+# Added get_category_by_wc_id and find_category_by_name_or_slug methods to DatabaseManager for improved category handling.
 """
 Database Manager - Quản lý cơ sở dữ liệu SQLite
 
@@ -81,7 +81,7 @@ class DatabaseManager:
         import time
         max_retries = 3
         retry_delay = 0.1
-        
+
         for attempt in range(max_retries):
             try:
                 conn = sqlite3.connect(self.db_path, timeout=30.0)  # 30 second timeout
@@ -106,7 +106,7 @@ class DatabaseManager:
             db_dir = os.path.dirname(self.db_path)
             if db_dir and not os.path.exists(db_dir):
                 os.makedirs(db_dir, exist_ok=True)
-            
+
             # Kiểm tra quyền ghi file
             try:
                 test_conn = sqlite3.connect(self.db_path)
@@ -117,7 +117,7 @@ class DatabaseManager:
                 import tempfile
                 self.db_path = os.path.join(tempfile.gettempdir(), "woocommerce_manager.db")
                 self.logger.info(f"Using temporary database: {self.db_path}")
-            
+
             with self.get_connection() as conn:
                 # Tạo bảng sites
                 conn.execute("""
@@ -344,7 +344,7 @@ class DatabaseManager:
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
-            
+
             # Chỉ tạo bảng products cơ bản
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS products (
@@ -356,7 +356,7 @@ class DatabaseManager:
                     FOREIGN KEY (site_id) REFERENCES sites (id)
                 )
             """)
-            
+
             conn.commit()
 
     # Site operations
@@ -699,8 +699,8 @@ class DatabaseManager:
             self.logger.error(f"Error creating category: {str(e)}")
             raise
 
-    def get_category_by_id(self, category_id: int) -> Optional[Dict[str, Any]]:
-        """Lấy category theo ID"""
+    def get_category_by_id(self, category_id: int) -> Optional[Dict]:
+        """Lấy thông tin category theo ID"""
         try:
             with self.get_connection() as conn:
                 cursor = conn.execute("""
@@ -709,10 +709,82 @@ class DatabaseManager:
                     LEFT JOIN sites s ON c.site_id = s.id
                     WHERE c.id = ?
                 """, (category_id,))
+
                 row = cursor.fetchone()
-                return dict(row) if row else None
+                if row:
+                    return dict(row)
+                return None
+
         except Exception as e:
-            self.logger.error(f"Error getting category by id {category_id}: {str(e)}")
+            self.logger.error(f"Error getting category by ID {category_id}: {str(e)}")
+            return None
+
+    def get_category_by_wc_id(self, site_id: int, wc_category_id: int) -> Optional[Dict]:
+        """Lấy thông tin category theo WooCommerce ID và site ID"""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.execute("""
+                    SELECT c.*, s.name as site_name 
+                    FROM categories c
+                    LEFT JOIN sites s ON c.site_id = s.id
+                    WHERE c.site_id = ? AND c.wc_category_id = ?
+                """, (site_id, wc_category_id))
+
+                row = cursor.fetchone()
+                if row:
+                    return dict(row)
+                return None
+
+        except Exception as e:
+            self.logger.error(f"Error getting category by WC ID {wc_category_id} for site {site_id}: {str(e)}")
+            return None
+
+    def find_category_by_name_or_slug(self, site_id: int, name: str = None, slug: str = None) -> Optional[Dict]:
+        """Tìm category theo tên hoặc slug trong site"""
+        try:
+            with self.get_connection() as conn:
+                if name and slug:
+                    # Tìm theo cả tên và slug
+                    cursor = conn.execute("""
+                        SELECT c.*, s.name as site_name 
+                        FROM categories c
+                        LEFT JOIN sites s ON c.site_id = s.id
+                        WHERE c.site_id = ? AND (LOWER(c.name) = ? OR LOWER(c.slug) = ?)
+                        ORDER BY 
+                            CASE WHEN LOWER(c.name) = ? THEN 1 ELSE 2 END,
+                            c.id DESC
+                        LIMIT 1
+                    """, (site_id, name.lower(), slug.lower(), name.lower()))
+                elif name:
+                    # Chỉ tìm theo tên
+                    cursor = conn.execute("""
+                        SELECT c.*, s.name as site_name 
+                        FROM categories c
+                        LEFT JOIN sites s ON c.site_id = s.id
+                        WHERE c.site_id = ? AND LOWER(c.name) = ?
+                        ORDER BY c.id DESC
+                        LIMIT 1
+                    """, (site_id, name.lower()))
+                elif slug:
+                    # Chỉ tìm theo slug
+                    cursor = conn.execute("""
+                        SELECT c.*, s.name as site_name 
+                        FROM categories c
+                        LEFT JOIN sites s ON c.site_id = s.id
+                        WHERE c.site_id = ? AND LOWER(c.slug) = ?
+                        ORDER BY c.id DESC
+                        LIMIT 1
+                    """, (site_id, slug.lower()))
+                else:
+                    return None
+
+                row = cursor.fetchone()
+                if row:
+                    return dict(row)
+                return None
+
+        except Exception as e:
+            self.logger.error(f"Error finding category by name/slug for site {site_id}: {str(e)}")
             return None
 
     def get_all_categories(self) -> List[Dict[str, Any]]:
@@ -835,21 +907,21 @@ class DatabaseManager:
                 # Tạo câu UPDATE động từ scan_data
                 set_clauses = []
                 values = []
-                
+
                 valid_columns = {'name', 'description', 'folder_count', 'data', 'updated_at'}
-                
+
                 for key, value in scan_data.items():
                     if key in valid_columns:
                         set_clauses.append(f"{key} = ?")
                         values.append(value)
-                
+
                 if set_clauses:
                     values.append(scan_id)
                     query = f"UPDATE saved_scans SET {', '.join(set_clauses)} WHERE id = ?"
-                    
+
                     cursor = conn.execute(query, values)
                     conn.commit()
-                    
+
                     if cursor.rowcount > 0:
                         self.logger.info(f"Updated saved scan {scan_id}")
                         return True
@@ -859,7 +931,7 @@ class DatabaseManager:
                 else:
                     self.logger.warning(f"No valid columns to update for saved scan {scan_id}")
                     return False
-                    
+
         except Exception as e:
             self.logger.error(f"Error updating saved scan {scan_id}: {str(e)}")
             return False
@@ -1139,24 +1211,24 @@ class DatabaseManager:
             # Use separate connection for this update to avoid conflicts
             max_retries = 3
             retry_delay = 0.1
-            
+
             for attempt in range(max_retries):
                 try:
                     conn = self.get_connection()
-                    
+
                     # Begin immediate transaction to lock the row
                     conn.execute("BEGIN IMMEDIATE")
-                    
+
                     # Kiểm tra folder có tồn tại không
                     check_cursor = conn.execute("SELECT id, status FROM folder_scans WHERE id = ?", (folder_id,))
                     existing_folder = check_cursor.fetchone()
-                    
+
                     if not existing_folder:
                         self.logger.error(f"Folder scan {folder_id} not found in database")
                         conn.rollback()
                         conn.close()
                         return False
-                    
+
                     current_status = existing_folder[1] if existing_folder else None
                     self.logger.info(f"🔍 Folder {folder_id} current status: {current_status}")
 
@@ -1187,19 +1259,19 @@ class DatabaseManager:
                         query = f"UPDATE folder_scans SET {', '.join(set_clauses)} WHERE id = ?"
                         self.logger.info(f"🔄 Executing update query for folder {folder_id}: {query[:100]}...")
                         self.logger.info(f"📝 Update values: {values}")
-                        
+
                         cursor = conn.execute(query, values)
                         rows_affected = cursor.rowcount
-                        
+
                         # Verify the update before committing
                         verify_cursor = conn.execute("SELECT status, wc_product_id FROM folder_scans WHERE id = ?", (folder_id,))
                         verify_result = verify_cursor.fetchone()
-                        
+
                         if verify_result:
                             new_status = verify_result[0]
                             new_product_id = verify_result[1]
                             self.logger.info(f"🔍 Folder {folder_id} new status: {new_status}, product_id: {new_product_id}")
-                        
+
                         if rows_affected > 0:
                             conn.commit()
                             conn.close()
@@ -1222,7 +1294,7 @@ class DatabaseManager:
                         conn.close()
                     except:
                         pass
-                        
+
                     if "database is locked" in str(e) and attempt < max_retries - 1:
                         import time
                         time.sleep(retry_delay * (attempt + 1))
@@ -1234,7 +1306,7 @@ class DatabaseManager:
                             import traceback
                             self.logger.error(f"❌ Final attempt failed. Traceback: {traceback.format_exc()}")
                         continue
-            
+
             return False
 
         except Exception as e:
@@ -1359,7 +1431,7 @@ class DatabaseManager:
             except Exception as e:
                 self.logger.error(f"Error deleting folder scan {folder_id}: {str(e)}")
                 return False
-        
+
         return False
 
     def get_folder_scan_by_path(self, path: str) -> Optional[Dict[str, Any]]:
@@ -1656,26 +1728,27 @@ class DatabaseManager:
 
                 # Lưu từng page
                 for page in pages:
-                    title = page.get('title', '')
+                    wp_page_id = page.get('id')
+                    title = page.get('title', {})
                     if isinstance(title, dict):
                         title = title.get('rendered', '')
-
-                    content = page.get('content', '')
+                    
+                    content = page.get('content', {})
                     if isinstance(content, dict):
                         content = content.get('rendered', '')
-
-                    excerpt = page.get('excerpt', '')
+                    
+                    excerpt = page.get('excerpt', {})
                     if isinstance(excerpt, dict):
                         excerpt = excerpt.get('rendered', '')
 
-                    conn.execute('''
-                        INSERT OR REPLACE INTO pages 
-                        (site_id, wp_page_id, title, slug, content, excerpt, status, 
-                         parent_id, menu_order, featured_media, author, last_sync, updated_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-                    ''', (
+                    conn.execute("""
+                        INSERT INTO pages (
+                            site_id, wp_page_id, title, slug, content, excerpt, status,
+                            parent_id, menu_order, featured_media, author, last_sync
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
                         site_id,
-                        page.get('id', 0),
+                        wp_page_id,
                         title,
                         page.get('slug', ''),
                         content,
@@ -1692,86 +1765,5 @@ class DatabaseManager:
                 self.logger.info(f"Saved {len(pages)} pages for site {site_id}")
 
         except Exception as e:
-            self.logger.error(f"Error saving pages: {str(e)}")
+            self.logger.error(f"Error saving pages from API: {str(e)}")
             raise
-
-    def debug_category_mapping(self, site_id: int = None) -> Dict[str, Any]:
-        """Debug category mapping để kiểm tra tình trạng đồng bộ"""
-        try:
-            with self.get_connection() as conn:
-                if site_id:
-                    # Debug cho site cụ thể
-                    cursor = conn.execute("""
-                        SELECT c.*, s.name as site_name 
-                        FROM categories c
-                        LEFT JOIN sites s ON c.site_id = s.id
-                        WHERE c.site_id = ?
-                        ORDER BY c.name
-                    """, (site_id,))
-                else:
-                    # Debug cho tất cả sites
-                    cursor = conn.execute("""
-                        SELECT c.*, s.name as site_name 
-                        FROM categories c
-                        LEFT JOIN sites s ON c.site_id = s.id
-                        ORDER BY s.name, c.name
-                    """)
-
-                categories = [dict(row) for row in cursor.fetchall()]
-
-                # Tính toán thống kê
-                total_categories = len(categories)
-                categories_with_wc_id = len([cat for cat in categories if cat.get('wc_category_id')])
-                categories_without_wc_id = total_categories - categories_with_wc_id
-
-                # Thống kê theo site
-                site_stats = {}
-                for cat in categories:
-                    site_name = cat.get('site_name', 'Unknown')
-                    if site_name not in site_stats:
-                        site_stats[site_name] = {'total': 0, 'with_wc_id': 0}
-                    site_stats[site_name]['total'] += 1
-                    if cat.get('wc_category_id'):
-                        site_stats[site_name]['with_wc_id'] += 1
-
-                return {
-                    'total_categories': total_categories,
-                    'categories_with_wc_id': categories_with_wc_id,
-                    'categories_without_wc_id': categories_without_wc_id,
-                    'categories': categories,
-                    'site_stats': site_stats
-                }
-
-        except Exception as e:
-            self.logger.error(f"Error debugging category mapping: {str(e)}")
-            return {
-                'total_categories': 0,
-                'categories_with_wc_id': 0,
-                'categories_without_wc_id': 0,
-                'categories': [],
-                'site_stats': {}
-            }
-
-    def load_bulk_config(self, batch_id: int = None) -> Optional[str]:
-        """Load bulk upload configuration from database"""
-        try:
-            # For now, return None since we don't have a config table yet
-            # In the future, you could query a config table here
-            self.logger.info("No saved bulk config found")
-            return None
-
-        except Exception as e:
-            self.logger.error(f"Error loading bulk config: {str(e)}")
-            return None
-
-    def save_bulk_config(self, folders: List[Dict], config_json: str, batch_id: int = None) -> bool:
-        """Save bulk upload configuration to database"""
-        try:
-            # For now, just log that config was saved
-            # In the future, you could create a config table to persist this
-            self.logger.info(f"Bulk config saved for {len(folders)} folders")
-            return True
-
-        except Exception as e:
-            self.logger.error(f"Error saving bulk config: {str(e)}")
-            return False

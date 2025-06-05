@@ -490,7 +490,7 @@ class PageManagerTab(QWidget):
             # Debug logging
             self.logger.debug(f"Filtering pages - Site ID: {site_id}, Site Text: {site_text}, Search: {search_term}")
 
-            # Kiểm tra điều kiện lọc site
+            # Kiểm tra điều kiện lọc site - chỉ lọc khi chọn site cụ thể
             if site_id and site_id != 0 and site_text != "Tất cả sites":  
                 pages = self.db.get_pages_by_site(site_id)
                 self.logger.debug(f"Found {len(pages)} pages for site_id {site_id}")

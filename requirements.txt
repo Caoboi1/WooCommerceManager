@@ -1,5 +1,7 @@
+# WooCommerce Product Manager Dependencies
 PyQt6>=6.6.1
 requests>=2.31.0
 pandas>=2.1.4
-woocommerce>=3.0.0
-python-dotenv>=1.0.0
+
+# Tùy chọn cho xử lý ảnh
+Pillow>=10.0.0

@@ -1,0 +1,17 @@
+2025-06-03 04:56:00,325 - __main__ - INFO - Starting application in safe mode...
+2025-06-03 16:56:28,373 - __main__ - INFO - Starting WooCommerce Product Manager (Safe Mode)
+2025-06-03 16:56:28,429 - __main__ - INFO - Database initialized successfully
+2025-06-03 16:56:28,477 - __main__ - INFO - Application started successfully
+2025-06-03 16:56:29,633 - app.main_window_safe - INFO - Site manager tab loaded
+2025-06-03 16:56:30,402 - app.main_window_safe - INFO - Product manager tab loaded
+2025-06-03 16:56:31,340 - app.main_window_safe - INFO - Category manager tab loaded
+2025-06-03 16:56:31,365 - app.main_window_safe - INFO - Page manager tab loaded
+2025-06-03 16:56:31,376 - app.main_window_safe - INFO - Folder scanner tab loaded
+2025-06-03 16:56:38,660 - __main__ - INFO - Starting WooCommerce Product Manager (Safe Mode)
+2025-06-03 16:56:38,710 - __main__ - INFO - Database initialized successfully
+2025-06-03 16:56:38,763 - __main__ - INFO - Application started successfully
+2025-06-03 16:56:39,950 - app.main_window_safe - INFO - Site manager tab loaded
+2025-06-03 16:56:40,816 - app.main_window_safe - INFO - Product manager tab loaded
+2025-06-03 16:56:41,800 - app.main_window_safe - INFO - Category manager tab loaded
+2025-06-03 16:56:41,810 - app.main_window_safe - INFO - Page manager tab loaded
+2025-06-03 16:56:41,820 - app.main_window_safe - INFO - Folder scanner tab loaded
